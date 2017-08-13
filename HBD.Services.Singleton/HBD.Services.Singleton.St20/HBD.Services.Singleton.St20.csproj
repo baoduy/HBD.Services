@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>HBD.Services.Singleton</AssemblyName>
+    <RootNamespace>HBD.Services.Singleton</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="..\HBD.Services.Singleton.Share\HBD.Services.Singleton.Share.projitems" Label="Shared" />
+
+</Project>

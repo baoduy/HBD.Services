@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>HBD.Services.Caching</AssemblyName>
+    <RootNamespace>HBD.Services.Caching</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="..\HBD.Services.Caching.Share\HBD.Services.Caching.Share.projitems" Label="Shared" />
+
+  <Import Project="..\HBD.Services.Caching.StShare\HBD.Services.Caching.StShare.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.0" />
+  </ItemGroup>
+
+</Project>

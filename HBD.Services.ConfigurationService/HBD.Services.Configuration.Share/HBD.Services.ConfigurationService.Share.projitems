@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9bc77d6d-ff2d-4cd0-8aa1-5fa84ce998c5</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>HBD.Services.Configuration</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AdapterRegisterdException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AdapterNotFoundException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\IConfigAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IConfigurationService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Exceptions\" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,75 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HBD.Services.Configuration.Share", "HBD.Services.Configuration.Share\HBD.Services.Configuration.Share.shproj", "{9BC77D6D-FF2D-4CD0-8AA1-5FA84CE998C5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Compilation", "2. Compilation", "{95F62596-42AD-43AD-8851-A74F3F296488}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Shared", "1. Shared", "{0BFFE542-DF6B-4999-AFE6-DF71696EEF51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Tests", "3. Tests", "{B3386BC3-1D5A-4EA5-83F9-62519AE641C0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{228DCBD3-1D56-463A-93D7-59B34C7A9538}"
+	ProjectSection(SolutionItems) = preProject
+		HBD.Configuration.nuspec = HBD.Configuration.nuspec
+		ReadMe.md = ReadMe.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HBD.Services.Configuration.45", "HBD.Services.Configuration.45\HBD.Services.Configuration.45.csproj", "{19AEEC5D-DF75-40C7-B7CF-98689ED01CE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HBD.Services.Configuration.St16", "HBD.Services.Configuration.St16\HBD.Services.Configuration.St16.csproj", "{8647CF08-F1B4-4297-A46D-A23A1DC40B25}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HBD.Services.Configuration.St20", "HBD.Services.Configuration.St20\HBD.Services.Configuration.St20.csproj", "{6C68DE40-5E9B-4C1A-B964-4602E95703AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HBD.Services.Configuration.4xTests", "HBD.Services.Configuration.4xTests\HBD.Services.Configuration.4xTests.csproj", "{837FE348-33F2-4E2F-B732-CE11A49E2A29}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HBD.Services.Configuration.StTests", "UnitTestProject1\HBD.Services.Configuration.StTests.csproj", "{FB6419E6-ABAE-408E-9BAF-C670391C2350}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		HBD.Services.Configuration.Share\HBD.Services.ConfigurationService.Share.projitems*{19aeec5d-df75-40c7-b7cf-98689ed01ce6}*SharedItemsImports = 4
+		HBD.Services.Configuration.Share\HBD.Services.ConfigurationService.Share.projitems*{9bc77d6d-ff2d-4cd0-8aa1-5fa84ce998c5}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{19AEEC5D-DF75-40C7-B7CF-98689ED01CE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19AEEC5D-DF75-40C7-B7CF-98689ED01CE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19AEEC5D-DF75-40C7-B7CF-98689ED01CE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19AEEC5D-DF75-40C7-B7CF-98689ED01CE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8647CF08-F1B4-4297-A46D-A23A1DC40B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8647CF08-F1B4-4297-A46D-A23A1DC40B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8647CF08-F1B4-4297-A46D-A23A1DC40B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8647CF08-F1B4-4297-A46D-A23A1DC40B25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C68DE40-5E9B-4C1A-B964-4602E95703AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C68DE40-5E9B-4C1A-B964-4602E95703AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C68DE40-5E9B-4C1A-B964-4602E95703AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C68DE40-5E9B-4C1A-B964-4602E95703AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{837FE348-33F2-4E2F-B732-CE11A49E2A29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{837FE348-33F2-4E2F-B732-CE11A49E2A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{837FE348-33F2-4E2F-B732-CE11A49E2A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{837FE348-33F2-4E2F-B732-CE11A49E2A29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB6419E6-ABAE-408E-9BAF-C670391C2350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB6419E6-ABAE-408E-9BAF-C670391C2350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB6419E6-ABAE-408E-9BAF-C670391C2350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB6419E6-ABAE-408E-9BAF-C670391C2350}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9BC77D6D-FF2D-4CD0-8AA1-5FA84CE998C5} = {0BFFE542-DF6B-4999-AFE6-DF71696EEF51}
+		{19AEEC5D-DF75-40C7-B7CF-98689ED01CE6} = {95F62596-42AD-43AD-8851-A74F3F296488}
+		{8647CF08-F1B4-4297-A46D-A23A1DC40B25} = {95F62596-42AD-43AD-8851-A74F3F296488}
+		{6C68DE40-5E9B-4C1A-B964-4602E95703AB} = {95F62596-42AD-43AD-8851-A74F3F296488}
+		{837FE348-33F2-4E2F-B732-CE11A49E2A29} = {B3386BC3-1D5A-4EA5-83F9-62519AE641C0}
+		{FB6419E6-ABAE-408E-9BAF-C670391C2350} = {B3386BC3-1D5A-4EA5-83F9-62519AE641C0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84990970-FA9F-499D-938D-4CC5D407D529}
+	EndGlobalSection
+EndGlobal
