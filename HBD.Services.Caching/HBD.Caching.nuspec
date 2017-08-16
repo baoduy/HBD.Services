@@ -7,16 +7,17 @@
     <authors>Duy Hoang</authors>
     <owners>Duy Hoang</owners>
     <description>
-      The Caching service from HBD.Framework.
+      The Caching service for .Net developers. This service originally in HBD.Framework package.
+      Providing the flexible way to develop the caching for .Net application not only Memory caching but also the other caching services like Redis, file, Web API and Database caching.
     </description>
     <releaseNotes>
       Version ${NugetVersion}
-      - Moved from HBD.Framework.
+      - Separate from HBD.Framework.
       - Support MemoryCache for all .Net Framework
     </releaseNotes>
     <summary>
-      The helpful library for .Net developers which support:
-      - Caching
+      The Caching service for .Net developers. This service originally in HBD.Framework package.
+      Providing the flexible way to develop the caching for .Net application not only Memory caching but also the other caching services like Redis, file, Web API and Database caching.
     </summary>
     <language>en-US</language>
     <projectUrl>https://github.com/baoduy/HBD.Services</projectUrl>
