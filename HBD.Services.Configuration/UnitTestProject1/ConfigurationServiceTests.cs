@@ -67,7 +67,7 @@ namespace HBD.Services.Configuration.StTests
             val.Should().NotBeNull();
 
             var a = BootStrapper.Default.Container.GetExport<TestConfigAdapter>();
-            a.HasChanged = true;
+            a.IsChanged = true;
 
             val = config.Get<TestItem>();
             val.Should().NotBeNull();

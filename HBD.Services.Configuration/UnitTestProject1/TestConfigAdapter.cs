@@ -15,12 +15,12 @@ namespace HBD.Services.Configuration.StTests
         public int SaveCalled { get; private set; }
         public TimeSpan? Expiration { get; } = new TimeSpan(0, 0, 2);
 
-        public bool HasChanged { get; set; }
+        public bool IsChanged { get; set; }
 
-        public bool IsChanged()
+        public bool HasChanged()
         {
             IsChangedCalled++;
-            return HasChanged;
+            return IsChanged;
         }
 
         public TestItem Load()

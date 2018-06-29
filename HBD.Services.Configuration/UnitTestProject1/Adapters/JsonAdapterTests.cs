@@ -24,7 +24,7 @@ namespace HBD.Services.Configuration.StTests.Adapters
         public void Before_Load_Is_Changes_Should_Be_True()
         {
             var a = new TestJsonConfigAdapter();
-            a.IsChanged().Should().BeTrue();
+            a.HasChanged().Should().BeTrue();
         }
 
         [TestMethod]
@@ -32,7 +32,7 @@ namespace HBD.Services.Configuration.StTests.Adapters
         {
             var a = new TestJsonConfigAdapter();
             var t = a.Load();
-            a.IsChanged().Should().BeFalse();
+            a.HasChanged().Should().BeFalse();
             t.Should().NotBeNull();
         }
 
@@ -41,7 +41,7 @@ namespace HBD.Services.Configuration.StTests.Adapters
         {
             var a = new TestJsonConfigAdapter();
             var t = a.Load();
-            a.IsChanged().Should().BeFalse();
+            a.HasChanged().Should().BeFalse();
 
             t.Name = "The name has been changed";
             File.WriteAllText("TestData\\json1.json", Newtonsoft.Json.JsonConvert.SerializeObject(t));
@@ -49,7 +49,7 @@ namespace HBD.Services.Configuration.StTests.Adapters
             //Wait for file is stable
             Thread.Sleep(2000);
 
-            a.IsChanged().Should().BeTrue();
+            a.HasChanged().Should().BeTrue();
         }
 
         [TestMethod]

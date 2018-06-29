@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Duy, Hoang</Authors>
+    <Company>HBD</Company>
+    <Product>HBD.Services.Random</Product>
+    <Description>The ramdon heplers allow to generate random values
+This packages had been extracted from HBD.Framework.</Description>
+    <Copyright>@2018</Copyright>
+    <PackageIconUrl>https://raw.githubusercontent.com/baoduy/Images/master/NugetLogo.PNG</PackageIconUrl>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/baoduy/HBD.Services</PackageProjectUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageTags>Random, password generation</PackageTags>
+    <PackageReleaseNotes>Version 1.0.0
+- This packages had been extracted from HBD.Framework.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HBD.Framework" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="HBD.Services.Sql">
+      <Version>1.0.0</Version>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

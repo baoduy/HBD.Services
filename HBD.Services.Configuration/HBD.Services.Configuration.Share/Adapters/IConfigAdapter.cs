@@ -24,7 +24,7 @@ namespace HBD.Services.Configuration.Adapters
         /// The configuration will be re-load whenever the Expiration met.
         /// </summary>
         /// <returns></returns>
-        bool IsChanged();
+        bool HasChanged();
 
         /// <summary>
         /// The caching expiration of this configuration.

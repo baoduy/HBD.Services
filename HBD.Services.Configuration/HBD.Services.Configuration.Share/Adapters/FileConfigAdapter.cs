@@ -40,7 +40,7 @@ namespace HBD.Services.Configuration.Adapters
                 throw new FileNotFoundException(FilePath);
         }
 
-        public virtual bool IsChanged()
+        public virtual bool HasChanged()
         {
             Validate();
             if (_lastLoaded == DateTime.MinValue) return true;

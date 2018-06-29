@@ -65,7 +65,7 @@ namespace HBD.Services.Configuration._4xTests
             val.Should().NotBeNull();
 
             var a = BootStrapper.Default.Container.GetExportedValue<TestConfigAdapter>();
-            a.HasChanged = true;
+            a.IsChanged = true;
 
             val = config.Get<TestItem>();
             val.Should().NotBeNull();

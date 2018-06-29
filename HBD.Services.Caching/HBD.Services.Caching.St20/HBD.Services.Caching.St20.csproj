@@ -11,7 +11,7 @@
   <Import Project="..\HBD.Services.Caching.StShare\HBD.Services.Caching.StShare.projitems" Label="Shared" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>

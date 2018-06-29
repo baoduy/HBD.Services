@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HBD.Services.Sql", "HBD.Services.Sql\HBD.Services.Sql.csproj", "{A93198E4-0CF5-40AC-AE51-A0E9DB96C7DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HBD.Services.Sql.Tests", "HBD.Services.Sql.Tests\HBD.Services.Sql.Tests.csproj", "{F4FCEA1E-8EEB-4288-A0AC-B32C1D870993}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A93198E4-0CF5-40AC-AE51-A0E9DB96C7DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A93198E4-0CF5-40AC-AE51-A0E9DB96C7DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A93198E4-0CF5-40AC-AE51-A0E9DB96C7DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A93198E4-0CF5-40AC-AE51-A0E9DB96C7DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4FCEA1E-8EEB-4288-A0AC-B32C1D870993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4FCEA1E-8EEB-4288-A0AC-B32C1D870993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4FCEA1E-8EEB-4288-A0AC-B32C1D870993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4FCEA1E-8EEB-4288-A0AC-B32C1D870993}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A66F0B3E-DB3C-4648-8E66-B79C55949B18}
+	EndGlobalSection
+EndGlobal

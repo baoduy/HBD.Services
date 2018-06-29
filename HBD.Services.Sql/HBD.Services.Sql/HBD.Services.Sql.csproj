@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Duy Hoang</Authors>
+    <Company>HBD</Company>
+    <Description>The Sql helper library for .Net developers.</Description>
+    <Copyright>@2018</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/baoduy/HBD.Services</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/baoduy/Images/master/NugetLogo.PNG</PackageIconUrl>
+    <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageTags>Sql, Sql Client, Sql Helper, Sql Schema</PackageTags>
+    <PackageReleaseNotes>Version 1.0.0
+- This packages had been extracted from HBD.Framework.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HBD.Framework" Version="2.1.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.3" />
+  </ItemGroup>
+
+</Project>

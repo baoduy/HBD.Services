@@ -33,25 +33,19 @@ namespace HBD.Services.Configuration
             }
         }
 
-        public ConfigurationService(ConfigurationServiceBuilder configuration = null)
-        {
+        public ConfigurationService() : this(null) { }
 
-            _defaultExpiration = new TimeSpan(4, 0, 0);
-            _cacheProvider = new MemoryCacheProvider(_defaultExpiration);
+        protected internal ConfigurationService(ConfigurationServiceBuilder configuration)
+        {
+            _defaultExpiration = configuration?.DefaultExpiration ?? new TimeSpan(4, 0, 0);
+            _cacheProvider = configuration?.CacheProvider ?? new MemoryCacheProvider(_defaultExpiration);
+            _serviceLocator = configuration?.ServiceLocator;
+
             _adapters = new List<IConfigAdapter>();
             _readOnlyAdapters = new ReadOnlyCollection<IConfigAdapter>(_adapters);
 
             if (configuration != null)
             {
-                if (configuration.ServiceLocator != null)
-                    _serviceLocator = configuration.ServiceLocator;
-
-                if (configuration.DefaultExpiration != null)
-                    _defaultExpiration = configuration.DefaultExpiration.Value;
-
-                if (configuration.CacheProvider != null)
-                    _cacheProvider = configuration.CacheProvider;
-
                 _ignoreCaching = configuration.IsIgnoreCaching;
                 _ignoreServiceLocator = configuration.IsIgnoreServiceLocator;
 
@@ -178,7 +172,7 @@ namespace HBD.Services.Configuration
             var val = TryGetFromCache<TConfig>();
 
             //2. Check if value has changed set val is Null to reload it.
-            if (val != null && !adapter.IsChanged())
+            if (val != null && !adapter.HasChanged())
                 return val;
 
             val = adapter.Load();
@@ -198,7 +192,7 @@ namespace HBD.Services.Configuration
             var val = TryGetFromCache<TConfig>();
 
             //2. Check if value has changed set val is Null to reload it.
-            if (val != null && !adapter.IsChanged())
+            if (val != null && !adapter.HasChanged())
                 return val;
 
             val = await adapter.LoadAsync();

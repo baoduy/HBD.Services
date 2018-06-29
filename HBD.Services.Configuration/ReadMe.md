@@ -24,7 +24,7 @@ class TestJsonConfigAdapter : JsonConfigAdapter<TestItem>
 }
 ```
 
-As the config item will be cached in the CacheService so if you want to manage the caching duration then override the Expiration property and provider the duration.
+As the config item will be cached in the CacheService so if you want to manage the caching duration, then override the Expiration property and provide the duration.
 
 ```csharp
  /// <summary>
@@ -38,10 +38,9 @@ As the config item will be cached in the CacheService so if you want to manage t
 > However, If you want to create an Adapter for the other config source instead of Json file you should implement the IConfigAdapter<out TConfig> instead.
 
 ### 2. Config File Finder
-There is an helper class had been provided allow to searching the config file in the Application Folder or in the specific one at runtime allows to deploy the config file into
-Production environment flexibility.
+There is a helper class had been provided allow to searching the config file in the Application Folder or the specific one at runtime. So that you place your config file in any folders in the application root, just ensure that the file name is identical to other files.
 
-- Searching config file in specific folder.
+- Searching in a particular folder.
 
 ```csharp
 //Find the configFile.json in the Configuration folder includes sub folders.
@@ -95,11 +94,11 @@ var t = service.Get<TestItem>();
 t.Should().NotBeNull();
 ```
 
-By default, Configuration manager is support loading the XML and Json configuration without create adapters instead just simply register your config type and file location into ConfigurationServiceBuilder.
+By default, the Configuration manager supports loading the XML and Json configuration without creating adapters instead just simply register your config type and file location into ConfigurationServiceBuilder.
 ```csharp
   var config = new ConfigurationServiceBuilder()
-                 .RegisterFile<TestItem>(new FileFinder().Find("Config.xml"))
-                 .RegisterFile<TestItem>("Config.json")
+                 .RegisterFile<ConfigItem1>(new FileFinder().Find("Config.xml"))
+                 .RegisterFile<ConfigItem2>("Config.json")
                  .Build();
 ```
 

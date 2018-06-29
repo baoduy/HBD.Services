@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HBD.Services.Polly", "HBD.Services.Polly\HBD.Services.Polly.csproj", "{FC10CFCC-FD24-455A-AB70-E75A48967A36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HBD.Services.Polly.Tests", "HBD.Services.Polly.Tests\HBD.Services.Polly.Tests.csproj", "{355BEEC3-8C4D-4B0C-B718-C2C7ED58BFC5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC10CFCC-FD24-455A-AB70-E75A48967A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC10CFCC-FD24-455A-AB70-E75A48967A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC10CFCC-FD24-455A-AB70-E75A48967A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC10CFCC-FD24-455A-AB70-E75A48967A36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{355BEEC3-8C4D-4B0C-B718-C2C7ED58BFC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{355BEEC3-8C4D-4B0C-B718-C2C7ED58BFC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{355BEEC3-8C4D-4B0C-B718-C2C7ED58BFC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{355BEEC3-8C4D-4B0C-B718-C2C7ED58BFC5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5FE20232-55FE-4C06-A53F-25531BB4E08B}
+	EndGlobalSection
+EndGlobal
