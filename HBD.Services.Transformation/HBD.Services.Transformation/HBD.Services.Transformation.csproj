@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Duy Hoang</Authors>
     <Company>HBD</Company>
-    <Description>The helper class to trasnform a string based on the template and data objects.</Description>
+    <Description>The helper class to trasnform a string based on the template and data objects, dictionany or lazy data provider.</Description>
     <Copyright>@2018</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/baoduy/HBD.Services</PackageProjectUrl>
@@ -13,12 +13,16 @@
     <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
     <PackageTags>transformation,transform,template</PackageTags>
-    <PackageReleaseNotes>Version 1.0.0.1
+    <PackageReleaseNotes>Version 1.0.0.4
+- Support Lazy data provider and IDictionary&lt;string,object&gt;
+
+Version 1.0.0.1
 - Miner changes on the TokenResolver and ValueIValueFormatter.
 
 Version 1.0.0
 - The first version of Transformation</PackageReleaseNotes>
-    <Version>1.0.0.3</Version>
+    <Version>1.0.0.4</Version>
+    <AssemblyVersion>1.0.0.4</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

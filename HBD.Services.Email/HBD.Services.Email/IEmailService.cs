@@ -4,28 +4,28 @@ using HBD.Services.Email.Exceptions;
 
 namespace HBD.Services.Email
 {
-    public interface IEmailService:IDisposable
+    public interface IEmailService : IDisposable
     {
         /// <summary>
         /// Send email by using predefined template.
         /// </summary>
         /// <param name="templateName"></param>
         /// <param name="transformData"></param>
-        /// <param name="attachements"></param>
+        /// <param name="attachments"></param>
         /// <exception cref="TemplateNotFoundException">Template not found</exception>
         /// <exception cref="ArgumentNullException">when templateName is null</exception>
-        void Send(string templateName, object[] transformData, params string[] attachements);
+        void Send(string templateName, object[] transformData, params string[] attachments);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="templateName"></param>
         /// <param name="transformData"></param>
-        /// <param name="attachements"></param>
+        /// <param name="attachments"></param>
         /// <exception cref="TemplateNotFoundException">Template not found</exception>
         /// <exception cref="ArgumentNullException">when templateName is null</exception>
         /// <returns></returns>
-        Task SendAsync(string templateName, object[] transformData, params string[] attachements);
+        Task SendAsync(string templateName, object[] transformData, params string[] attachments);
 
         /// <summary>
         /// Send Email

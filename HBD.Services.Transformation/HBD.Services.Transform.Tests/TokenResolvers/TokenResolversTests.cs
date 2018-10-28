@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using HBD.Services.Transformation.TokenDefinitions;
@@ -63,7 +64,7 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
         {
             var resolver = new TokenResolver();
 
-            var val =await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), data: new Object[]
+            var val = await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), data: new Object[]
             {
                 null,
                 new { A=(string)null},
@@ -71,6 +72,33 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
             });
 
             val.Should().Be(123);
+        }
+
+        [TestMethod]
+        public async Task Test_TokenResolver_Dictionary()
+        {
+            var resolver = new TokenResolver();
+
+            var val = await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new Dictionary<string, object>
+            {
+                {"A","Duy"}
+            });
+
+            val.Should().Be("Duy");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task Test_TokenResolver_OnlyDictionary_String_Object_Is_Supportted()
+        {
+            var resolver = new TokenResolver();
+
+            var val = await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new Dictionary<object, object>
+            {
+                {"A","Duy"}
+            });
+
+            val.Should().Be("Duy");
         }
     }
 }

@@ -14,12 +14,12 @@ namespace HBD.Services.Email
         private readonly object _locker = new object();
         private bool _initialized = false;
 
-        private readonly Action<EmailOptions> _optionFatory;
+        private readonly Action<EmailOptions> _optionFactory;
         private SmtpClient _smtpClient;
         private MailAddress _fromEmail;
 
-        private IReadOnlyCollection<EmailInfo> _emailInfos;
-        public IReadOnlyCollection<EmailInfo> EmailInfos
+        private IReadOnlyCollection<IEmailInfo> _emailInfos;
+        public IReadOnlyCollection<IEmailInfo> EmailInfos
         {
             get
             {
@@ -28,8 +28,8 @@ namespace HBD.Services.Email
             }
         }
 
-        public EmailService(Action<EmailOptions> optionFatory)
-            => this._optionFatory = optionFatory ?? throw new ArgumentNullException(nameof(optionFatory));
+        public EmailService(Action<EmailOptions> optionFactory)
+            => this._optionFactory = optionFactory ?? throw new ArgumentNullException(nameof(optionFactory));
 
         private void EnsureInitialized()
         {
@@ -37,7 +37,7 @@ namespace HBD.Services.Email
             lock (_locker)
             {
                 var options = new EmailOptions();
-                _optionFatory.Invoke(options);
+                _optionFactory.Invoke(options);
 
                 if (options.SmtpClientFactory == null)
                     throw new ArgumentNullException(nameof(options.SmtpClientFactory));
@@ -46,7 +46,7 @@ namespace HBD.Services.Email
 
 #if !NETSTANDARD2_0
                 if (_fromEmail == null)
-                    _fromEmail = Extentions.GetDefaultFromEmail();
+                    _fromEmail = Extensions.GetDefaultFromEmail();
 #endif
 
                 if (_fromEmail == null)
@@ -61,13 +61,13 @@ namespace HBD.Services.Email
                 if (duplicated.Any())
                     throw new TemplateDuplicatedException(string.Join(",", duplicated));
 
-                this._emailInfos = new ReadOnlyCollection<EmailInfo>(list.Select(t => new EmailInfo(t)).ToArray());
+                this._emailInfos = new ReadOnlyCollection<IEmailInfo>(list.Select(t => new EmailInfo(t)).ToArray());
 
                 _initialized = true;
             }
         }
 
-        private EmailInfo GetEmailInfo(string templateName)
+        private IEmailInfo GetEmailInfo(string templateName)
         {
             if (string.IsNullOrWhiteSpace(templateName))
                 throw new ArgumentNullException(nameof(templateName));
@@ -108,9 +108,9 @@ namespace HBD.Services.Email
             return ConsolidateEmail(mail);
         }
 
-        public void Send(string templateName, object[] transformData, params string[] attachements)
+        public void Send(string templateName, object[] transformData, params string[] attachments)
         {
-            var email = GetMailMessage(templateName, transformData, attachements);
+            var email = GetMailMessage(templateName, transformData, attachments);
             this.Send(email);
         }
 
@@ -120,9 +120,9 @@ namespace HBD.Services.Email
             _smtpClient.Send(ConsolidateEmail(email));
         }
 
-        public Task SendAsync(string templateName, object[] transformData, params string[] attachements)
+        public Task SendAsync(string templateName, object[] transformData, params string[] attachments)
         {
-            var email = GetMailMessageAsync(templateName, transformData, attachements).Result;
+            var email = GetMailMessageAsync(templateName, transformData, attachments).Result;
             return this.SendAsync(email);
         }
 

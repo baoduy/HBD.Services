@@ -45,7 +45,7 @@ namespace HBD.Services.Transform.Tests
         [TestMethod]
         public void Transform_Test()
         {
-            using (var t = new Transformer(op=>op.DisabledLocalCache=true))
+            using (var t = new Transformer(op => op.DisabledLocalCache = true))
             {
                 var s = t.Transform("Hoang [A] Duy", new { A = "Bao" });
                 s.Should().Be("Hoang Bao Duy");
@@ -65,7 +65,7 @@ namespace HBD.Services.Transform.Tests
         [TestMethod]
         public async Task TransformAsync_DefaultData_Test()
         {
-            using (var t = new Transformer(op=>op.TransformData=new object []{new { A = "Bao" }}))
+            using (var t = new Transformer(op => op.TransformData = new object[] { new { A = "Bao" } }))
             {
                 t.TransformData.Any().Should().BeTrue();
 
@@ -106,7 +106,7 @@ namespace HBD.Services.Transform.Tests
                 var s = t.Transform(template, new { A = "Hoang", B = "Bao", C = "Duy", D = "HBD" });
 
                 s.Should().ContainAll("Hoang", "Bao", "Duy", "HBD")
-                    .And.Subject.Should().NotContainAny("{","[","<");
+                    .And.Subject.Should().NotContainAny("{", "[", "<");
             }
         }
 
@@ -121,7 +121,7 @@ namespace HBD.Services.Transform.Tests
                 var s = await t.TransformAsync(template, new { A = "Hoang", B = "Bao", C = "Duy", D = "HBD" });
 
                 s.Should().ContainAll("Hoang", "Bao", "Duy", "HBD")
-                    .And.Subject.Should().NotContainAny("{","[","<");
+                    .And.Subject.Should().NotContainAny("{", "[", "<");
             }
         }
 
@@ -131,12 +131,42 @@ namespace HBD.Services.Transform.Tests
             var d = Path.GetDirectoryName(typeof(TransformTests).Assembly.Location);
             var template = File.ReadAllText(d + "\\TestData\\Data.txt");
 
-            using (var t = new Transformer(op=>op.DisabledLocalCache=true))
+            using (var t = new Transformer(op => op.DisabledLocalCache = true))
             {
                 var s = await t.TransformAsync(template, new { A = "Hoang", B = "Bao", C = "Duy", D = "HBD" });
 
                 s.Should().ContainAll("Hoang", "Bao", "Duy", "HBD")
-                    .And.Subject.Should().NotContainAny("{","[","<");
+                    .And.Subject.Should().NotContainAny("{", "[", "<");
+            }
+        }
+
+        [TestMethod]
+        public async Task Transform_HugeTemplate_Async_DataProvider_Test()
+        {
+            var d = Path.GetDirectoryName(typeof(TransformTests).Assembly.Location);
+            var template = File.ReadAllText(d + "\\TestData\\Data.txt");
+
+            using (var t = new Transformer())
+            {
+                var s = await t.TransformAsync(template, token => Task.FromResult(new { A = "Hoang", B = "Bao", C = "Duy", D = "HBD" } as object));
+
+                s.Should().ContainAll("Hoang", "Bao", "Duy", "HBD")
+                    .And.Subject.Should().NotContainAny("{", "[", "<");
+            }
+        }
+
+        [TestMethod]
+        public void Transform_HugeTemplate_DataProvider_Test()
+        {
+            var d = Path.GetDirectoryName(typeof(TransformTests).Assembly.Location);
+            var template = File.ReadAllText(d + "\\TestData\\Data.txt");
+
+            using (var t = new Transformer())
+            {
+                var s = t.Transform(template, token => new { A = "Hoang", B = "Bao", C = "Duy", D = "HBD" });
+
+                s.Should().ContainAll("Hoang", "Bao", "Duy", "HBD")
+                    .And.Subject.Should().NotContainAny("{", "[", "<");
             }
         }
     }

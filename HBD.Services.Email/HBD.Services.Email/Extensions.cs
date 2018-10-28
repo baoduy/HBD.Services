@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 [assembly: InternalsVisibleTo("HBD.Services.Email.Tests")]
 namespace HBD.Services.Email
 {
-    public static partial class Extentions
+    public static partial class Extensions
     {
         internal static IList<EmailTemplate> GetEmailTemplates(this EmailOptions options)
         {
@@ -88,10 +88,10 @@ namespace HBD.Services.Email
             }
         }
 
-        private static ITransformer CreateEmailTransformer(params object[] trasformData)
+        private static ITransformer CreateEmailTransformer(params object[] transformData)
             => new Transformer(op =>
             {
-                op.TransformData = trasformData;
+                op.TransformData = transformData;
 
                 foreach (var t in Transformer.DefaultTokenExtractors.Where(i =>
                     !(i is HBD.Services.Transformation.TokenExtractors.AngledBracketTokenExtractor)))
@@ -101,12 +101,12 @@ namespace HBD.Services.Email
                 
             });
 
-        internal static async Task<MailMessage> ToMailMessageAsync(this EmailInfo @this, params object[] trasformData)
+        internal static async Task<MailMessage> ToMailMessageAsync(this IEmailInfo @this, params object[] transformData)
         {
             var mail = new MailMessage();
 
             //Remove the AngledBracketTokenExtractor from Transformer as it might impacts to the html format. 
-            using (var ts = CreateEmailTransformer(trasformData))
+            using (var ts = CreateEmailTransformer(transformData))
             {
                 await Task.WhenAll(
                     mail.To.FromAsync(@this.ToEmails, ts),
@@ -122,12 +122,12 @@ namespace HBD.Services.Email
             return mail;
         }
 
-        internal static MailMessage ToMailMessage(this EmailInfo @this, params object[] trasformData)
+        internal static MailMessage ToMailMessage(this IEmailInfo @this, params object[] transformData)
         {
             var mail = new MailMessage();
 
             //Remove the AngledBracketTokenExtractor from Transformer as it might impacts to the html format. 
-            using (var ts = CreateEmailTransformer(trasformData))
+            using (var ts = CreateEmailTransformer(transformData))
             {
                 mail.To.From(@this.ToEmails, ts);
                 mail.CC.From(@this.CcEmails, ts);

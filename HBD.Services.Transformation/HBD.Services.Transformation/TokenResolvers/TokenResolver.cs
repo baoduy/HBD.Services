@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,23 +11,14 @@ namespace HBD.Services.Transformation.TokenResolvers
     public class TokenResolver : ITokenResolver
     {
         protected virtual PropertyInfo GetProperty(object data, string propertyName)
-        {
-            var val = data.GetType().GetProperty(propertyName,
-                BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
-
-            if (val == null)
-                val = data.GetType().GetProperty(propertyName,
+            => data.GetType().GetProperty(propertyName,
+                BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public)
+            //BindingFlags.NonPublic and BindingFlags.Public are not work together
+            ?? data.GetType().GetProperty(propertyName,
                    BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.NonPublic);
 
-            return val;
-        }
-
-
-        //=> data.GetType().GetProperties().FirstOrDefault(p =>
-        //    p.CanRead && p.Name.EndsWith(propertyName, StringComparison.CurrentCultureIgnoreCase));
-
         /// <summary>
-        /// Get the first not null value of the publict property of data.
+        /// Get the first not null value of the public property of data.
         /// </summary>
         /// <param name="token"></param>
         /// <param name="data"></param>
@@ -41,13 +34,27 @@ namespace HBD.Services.Transformation.TokenResolvers
 
             var propertyName = token.Key;
 
-            return (from d in data
-                    where d != null
-                    let p = GetProperty(d, propertyName)
-                    where p != null
-                    select p.GetValue(d) into val
-                    where val != null
-                    select val).FirstOrDefault();
+            foreach (var obj in data)
+            {
+                if (obj == null) continue;
+
+                object value;
+
+                if (obj is IDictionary)
+                {
+                    if (!(obj is IDictionary<string, object>))
+                        throw new ArgumentException("Only IDictionary<string,object> is supported");
+                    var d = (IDictionary<string, object>)obj;
+
+                    var key = d.Keys.FirstOrDefault(k => k.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+                    value = key != null ? d[key] : null;
+                }
+                else value = GetProperty(obj, propertyName)?.GetValue(obj);
+
+                if (value != null) return value;
+            }
+
+            return null;
         }
 
         public Task<object> ResolveAsync(IToken token, params object[] data)

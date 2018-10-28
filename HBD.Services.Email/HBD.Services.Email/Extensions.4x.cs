@@ -5,7 +5,7 @@ using System.Net.Mail;
 
 namespace HBD.Services.Email
 {
-    public static partial class Extentions
+    public static partial class Extensions
     {
         internal static MailAddress GetDefaultFromEmail()
             => ConfigurationManager.GetSection("system.net/mailSettings/smtp") is SmtpSection smtp

@@ -20,11 +20,12 @@ namespace HBD.Services.Transformation
             new SquareBracketExtractor(),
             new CurlyBracketExtractor(),
         };
+
         public static readonly ITokenResolver DefaultTokenResolver = new TokenResolver();
         public static readonly IValueFormatter DefaultConvertor = new ValueFormatter();
 
         private readonly object _locker = new object();
-        private readonly ConcurrentDictionary<string, object> _cacher;
+        private readonly ConcurrentDictionary<string, object> _cacheService;
         private readonly Action<TransformOptions> _optionFactory;
         private bool _initialized;
 
@@ -57,7 +58,7 @@ namespace HBD.Services.Transformation
         private IValueFormatter _formatter;
         /// <summary>
         /// The convertor will be used to convert obj to string.
-        /// Appy the data format in this object.
+        /// Apply the data format in this object.
         /// </summary>
         public IValueFormatter Formatter
         {
@@ -99,7 +100,7 @@ namespace HBD.Services.Transformation
         public Transformer(Action<TransformOptions> optionFactory)
         {
             this._optionFactory = optionFactory;
-            _cacher = new ConcurrentDictionary<string, object>();
+            _cacheService = new ConcurrentDictionary<string, object>();
         }
 
         private void EnsureInitialized()
@@ -148,11 +149,11 @@ namespace HBD.Services.Transformation
             return val;
         }
 
-        protected virtual object TryGetValueAndCache(IToken token, object[] additionalData)
+        protected virtual object TryGetAndCacheValue(IToken token, object[] additionalData)
         {
             return DisabledLocalCache
                 ? TryGetValue(token, additionalData)
-                : _cacher.GetOrAdd(token.Token.ToUpper(), t => TryGetValue(token, additionalData));
+                : _cacheService.GetOrAdd(token.Token.ToUpper(), t => TryGetValue(token, additionalData));
         }
 
         protected virtual string InternalTransform(string template, IEnumerable<IToken> tokens, object[] additionalData)
@@ -162,7 +163,7 @@ namespace HBD.Services.Transformation
 
             foreach (var token in tokens.OrderBy(t => t.Index))
             {
-                var val = TryGetValueAndCache(token, additionalData);
+                var val = TryGetAndCacheValue(token, additionalData);
 
                 if (val == null)
                     throw new UnResolvedTokenException(token.Token);
@@ -176,14 +177,25 @@ namespace HBD.Services.Transformation
             return builder.ToString();
         }
 
+        protected virtual string InternalTransformDataProvider(string template, IEnumerable<IToken> tokens, Func<IToken, object> dataProvider)
+        {
+            var list = tokens.ToList();
+            var data = list.Select(dataProvider).ToArray();
+            return InternalTransform(template, list, data);
+        }
+
+        protected virtual async Task<string> InternalTransformDataProviderAsync(string template, IEnumerable<IToken> tokens, Func<IToken, Task<object>> dataProvider)
+        {
+            var list = tokens.ToList();
+            var data = (await Task.WhenAll(list.Select(dataProvider))).ToArray();
+            return InternalTransform(template, list, data);
+        }
 
         public string Transform(string template, params object[] additionalData)
         {
             EnsureInitialized();
 
-            var copyTemplate = template;
-            var tokens = Tokens.SelectMany(t => t.Extract(copyTemplate));
-
+            var tokens = Tokens.SelectMany(t => t.Extract(template));
             return InternalTransform(template, tokens, additionalData);
         }
 
@@ -191,15 +203,30 @@ namespace HBD.Services.Transformation
         {
             EnsureInitialized();
 
-            var copyTemplate = template;
-            var tokens = await Task.WhenAll(Tokens.Select(t => t.ExtractAsync(copyTemplate)));
+            var tokens = await Task.WhenAll(Tokens.Select(t => t.ExtractAsync(template)));
+            return this.InternalTransform(template, tokens.SelectMany(i => i), additionalData);
+        }
 
-            return await Task.Run(() => this.InternalTransform(template, tokens.SelectMany(i => i), additionalData));
+
+        public string Transform(string template, Func<IToken, object> dataProvider)
+        {
+            EnsureInitialized();
+
+            var tokens = Tokens.SelectMany(t => t.Extract(template));
+            return InternalTransformDataProvider(template, tokens, dataProvider);
+        }
+
+        public async Task<string> TransformAsync(string template, Func<IToken, Task<object>> dataProvider)
+        {
+            EnsureInitialized();
+
+            var tokens = await Task.WhenAll(Tokens.Select(t => t.ExtractAsync(template)));
+            return await this.InternalTransformDataProviderAsync(template, tokens.SelectMany(i => i), dataProvider);
         }
 
 
         public void Dispose() => Dispose(true);
 
-        protected virtual void Dispose(bool disposing) => _cacher.Clear();
+        protected virtual void Dispose(bool disposing) => _cacheService.Clear();
     }
 }

@@ -7,7 +7,7 @@ namespace HBD.Services.Email.Configurations
     /// <summary>
     /// This 
     /// </summary>
-    public class EmailInfo
+    public class EmailInfo : IEmailInfo
     {
         private readonly EmailTemplate _template;
 
