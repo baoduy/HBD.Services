@@ -1,187 +1,99 @@
-using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using FluentAssertions;
-using HBD.Framework.IO;
 using HBD.Services.Email.Configurations;
-using HBD.Services.Email.Exceptions;
+using HBD.Services.Email.Providers;
+using HBD.Services.Transformation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using netDumbster.smtp;
 
 namespace HBD.Services.Email.Tests
 {
     [TestClass]
     public class EmailServiceTests
     {
-        private static readonly string Location = Path.GetFullPath("TestEmail");
+        private static SimpleSmtpServer _smtpServer;
+        [AssemblyInitialize]
+        public static void AppDomainSetup(TestContext context)
+            => _smtpServer = SimpleSmtpServer.Start(25);
 
-        [TestInitialize]
-        public void Setup()
-        {
-            Directory.CreateDirectory(Location);
-            DirectoryEx.DeleteFiles(Location);
-        }
+        [AssemblyCleanup]
+        public static void Cleanup() => _smtpServer.Stop();
 
         [TestMethod]
-        public void EmailService_Duplicated_Test()
+        public async Task Test_MailMessageProvider_ByTemplate()
         {
-            using (var t = new EmailService(op =>
-            {
-                op.FromEmailAddress = new MailAddress("system@hbd.com");
-
-                op.Templates.Add(new EmailTemplate("Duy")
+            var emailTemplateProviderMoq = new Mock<IEmailTemplateProvider>();
+            emailTemplateProviderMoq.Setup(e => e.GetTemplate(It.IsAny<string>()))
+                .ReturnsAsync(new EmailTemplate("Duy")
                 {
-                    ToEmails = "baoduy2412@yahoo.com",
-                    Subject = "S",
-                    Body = "123"
-                });
+                    ToEmails = "[DuyEmail],{HBDEmail};hoang@hbd.com",
+                    Body = "Hello [Name]",
+                    Subject = "Hi, [Name]"
+                }).Verifiable();
 
-                op.Templates.Add(new EmailTemplate("Duy")
-                {
-                    ToEmails = "baoduy2412@yahoo.com",
-                    Subject = "S",
-                    Body = "123"
-                });
-            }))
+            using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()))
             {
-                Action a = () =>
-                 {
-                     var c = t.EmailInfos.Count;
-                 };
 
-                a.Should().Throw<TemplateDuplicatedException>();
+                var mail = await mailProvider.GetMailMessageAsync("Duy",
+                    new object[]
+                    {
+                        new
+                        {
+                            DuyEmail = "drunkcoding@outlook.net",
+                            HBDEmail = "duy@hbd.net",
+                            Name = "Duy Hoang"
+                        }
+                    });
+
+                mail.Should().NotBeNull();
+                mail.To.Count.Should().Be(3);
+                mail.To.First().Address.Should().Be("drunkcoding@outlook.net");
+                mail.To.Last().Address.Should().Be("hoang@hbd.com");
+                mail.Subject.Should().Contain("Duy Hoang");
+                mail.Body.Should().Contain("Duy Hoang");
             }
+
+
+            emailTemplateProviderMoq.VerifyAll();
         }
 
         [TestMethod]
-        public void EmailService_EmailInfos_Test()
+        public async Task Test_SendEmail_ByTemplate()
         {
-            using (var t = new EmailService(op =>
-            {
-                op.FromEmailAddress = new MailAddress("system@hbd.com");
+            _smtpServer.ClearReceivedEmail();
 
-                op.Templates.Add(new EmailTemplate("Duy")
+            var emailTemplateProviderMoq = new Mock<IEmailTemplateProvider>();
+            emailTemplateProviderMoq.Setup(e => e.GetTemplate(It.IsAny<string>())).ReturnsAsync(new EmailTemplate("Duy")
+            {
+                ToEmails = "[DuyEmail],{HBDEmail},hoang@hbd.com",
+                Body = "Hello [Name]",
+            });
+
+            using (var mailService = new EmailService(
+                new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()), new EmailOptions
                 {
-                    ToEmails = "baoduy2412@yahoo.com",
-                    Subject = "S",
-                    Body = "123"
-                });
-            }))
-                t.EmailInfos.Should().NotBeNullOrEmpty();
-        }
-
-        [TestMethod]
-        public void EmailService_JsonFile_Test()
-        {
-            using (var t = new EmailService(op => { op.FromEmailAddress = new MailAddress("system@hbd.com");
-                op.TemplateJsonFile = "TestData\\Emails.json"; }))
-                t.EmailInfos.Should()
-                .NotBeNullOrEmpty();
-        }
-
-        [TestMethod]
-        public void EmailService_Sent_Test()
-        {
-            using (var smtp = new EmailService(op =>
+                    FromEmailAddress = new MailAddress("drunkcoding@outlook.net"),
+                    SmtpClientFactory = () => new SmtpClient("localhost", 25)
+                }))
             {
-                op.FromEmailAddress = new MailAddress("system@hbd.com");
 
-                op.TemplateJsonFile = "TestData\\Emails.json";
-                op.SmtpClientFactory = () => new SmtpClient
-                {
-                    DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                    DeliveryFormat = SmtpDeliveryFormat.International,
-                    PickupDirectoryLocation =Path.GetFullPath( Location)
-                };
-            }))
-            {
-                smtp.Send("Duy1", new object[]
+
+
+                await mailService.SendAsync("Duy", new object[]
                 {
                     new
                     {
-                        Duy="hoangbaoduy@gmail.com",
-                        OtherEmail="abc@123.com",
-                        Name="Duy"
+                        DuyEmail = "drunkcoding@outlook.net",
+                        HBDEmail = "duy@hbd.net",
+                        Name = "Duy Hoang"
                     }
                 });
-
-                Directory.GetFiles(Location).Any().Should().BeTrue();
             }
-        }
 
-        [TestMethod]
-        public async Task EmailService_SentAync_Test()
-        {
-            using (var smtp = new EmailService(op =>
-            {
-                op.FromEmailAddress = new MailAddress("system@hbd.com");
-
-                op.TemplateJsonFile = "TestData\\Emails.json";
-                op.SmtpClientFactory = () => new SmtpClient
-                {
-                    DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                    DeliveryFormat = SmtpDeliveryFormat.International,
-                    PickupDirectoryLocation =Path.GetFullPath( Location)
-                };
-            }))
-            {
-                await smtp.SendAsync("Duy1", new object[]
-                {
-                    new
-                    {
-                        Duy="hoangbaoduy@gmail.com",
-                        OtherEmail="abc@123.com",
-                        Name="Duy"
-                    }
-                });
-
-                Directory.GetFiles(Location).Any().Should().BeTrue();
-            }
-        }
-
-        [TestMethod]
-        public void EmailService_Sent_MailMessage_Test()
-        {
-            using (var smtp = new EmailService(op =>
-            {
-                op.FromEmailAddress = new MailAddress("system@hbd.com");
-
-                op.TemplateJsonFile = "TestData\\Emails.json";
-                op.SmtpClientFactory = () => new SmtpClient
-                {
-                    DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                    DeliveryFormat = SmtpDeliveryFormat.International,
-                    PickupDirectoryLocation =Path.GetFullPath( Location)
-                };
-            }))
-            {
-                smtp.Send(new MailMessage{To = { new MailAddress("duy@abc.com")}});
-
-                Directory.GetFiles(Location).Any().Should().BeTrue();
-            }
-        }
-
-        [TestMethod]
-        public async Task EmailService_SentAync_MailMessage_Test()
-        {
-            using (var smtp = new EmailService(op =>
-            {
-                op.FromEmailAddress = new MailAddress("system@hbd.com");
-
-                op.TemplateJsonFile = "TestData\\Emails.json";
-                op.SmtpClientFactory = () => new SmtpClient
-                {
-                    DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                    DeliveryFormat = SmtpDeliveryFormat.International,
-                    PickupDirectoryLocation =Path.GetFullPath( Location)
-                };
-            }))
-            {
-                await smtp.SendAsync(new MailMessage{To = { new MailAddress("duy@abc.com")}});
-
-                Directory.GetFiles(Location).Any().Should().BeTrue();
-            }
+            _smtpServer.ReceivedEmailCount.Should().BeGreaterOrEqualTo(1);
         }
     }
 }

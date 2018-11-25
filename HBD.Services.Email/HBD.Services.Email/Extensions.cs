@@ -1,46 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HBD.Services.Email.Configurations;
 using HBD.Services.Transformation;
-using Newtonsoft.Json;
 
 [assembly: InternalsVisibleTo("HBD.Services.Email.Tests")]
 namespace HBD.Services.Email
 {
     public static partial class Extensions
     {
-        internal static IList<EmailTemplate> GetEmailTemplates(this EmailOptions options)
+        public static ICollection<T> AddRange<T>(this ICollection<T> @this, IEnumerable<T> collection)
         {
-            var list = options.Templates;
-
-            if (string.IsNullOrWhiteSpace( options.TemplateJsonFile)) return list;
-
-            var value = File.ReadAllText(options.TemplateJsonFile);
-            var tmps = JsonConvert.DeserializeObject<IEnumerable<EmailTemplate>>(value);
-
-            foreach (var template in tmps)
+            if (@this == null || @this.IsReadOnly) return @this;
+            foreach (var item in collection)
             {
-                template.FromJsonFile = options.TemplateJsonFile;
-                list.Add(template);
+                @this.Add(item);
             }
 
-            return list;
+            return @this;
         }
 
-        internal static List<string> GetDuplicated(this IList<EmailTemplate> templates)
-            => templates.GroupBy(i => i.Name).Where(g => g.Count() > 1).Select(g => g.Key).Distinct().ToList();
-
         internal static string[] SplitBySeparator(this string @this)
-            =>string.IsNullOrWhiteSpace( @this) ? new string[0] : @this.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            => string.IsNullOrWhiteSpace(@this) ? new string[0] : @this.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
 
-        static readonly Regex ValidEmailRegex = CreateValidEmailRegex();
+        private static readonly Regex ValidEmailRegex = CreateValidEmailRegex();
 
         /// <summary>
         /// Taken from http://haacked.com/archive/2007/08/21/i-knew-how-to-validate-an-email-address-until-i.aspx
@@ -54,11 +40,11 @@ namespace HBD.Services.Email
 
         private static bool IsEmail(this string emailAddress) => ValidEmailRegex.IsMatch(emailAddress);
 
-        private static async Task FromAsync(this MailAddressCollection @this, string[] templates, ITransformer transformer)
+        internal static async Task FromAsync(this MailAddressCollection @this, string emailTemplates, ITransformer transformer, params object[] transformData)
         {
-            if (templates == null) return;
+            if (emailTemplates == null) return;
 
-            foreach (var s in templates)
+            foreach (var s in emailTemplates.SplitBySeparator())
             {
                 if (s.IsEmail())
                 {
@@ -66,79 +52,9 @@ namespace HBD.Services.Email
                     continue;
                 }
 
-                var e = await transformer.TransformAsync(s);
+                var e = await transformer.TransformAsync(s, transformData).ConfigureAwait(false);
                 @this.Add(e);
             }
-        }
-
-        private static void From(this MailAddressCollection @this, string[] templates, ITransformer transformer)
-        {
-            if (templates == null) return;
-
-            foreach (var s in templates)
-            {
-                if (s.IsEmail())
-                {
-                    @this.Add(s);
-                    continue;
-                }
-
-                var e = transformer.Transform(s);
-                @this.Add(e);
-            }
-        }
-
-        private static ITransformer CreateEmailTransformer(params object[] transformData)
-            => new Transformer(op =>
-            {
-                op.TransformData = transformData;
-
-                foreach (var t in Transformer.DefaultTokenExtractors.Where(i =>
-                    !(i is HBD.Services.Transformation.TokenExtractors.AngledBracketTokenExtractor)))
-                {
-                    op.TokenExtractors.Add(t);
-                }
-                
-            });
-
-        internal static async Task<MailMessage> ToMailMessageAsync(this IEmailInfo @this, params object[] transformData)
-        {
-            var mail = new MailMessage();
-
-            //Remove the AngledBracketTokenExtractor from Transformer as it might impacts to the html format. 
-            using (var ts = CreateEmailTransformer(transformData))
-            {
-                await Task.WhenAll(
-                    mail.To.FromAsync(@this.ToEmails, ts),
-                    mail.CC.FromAsync(@this.CcEmails, ts),
-                    mail.Bcc.FromAsync(@this.BccEmails, ts)
-                );
-
-                mail.Subject = await ts.TransformAsync(@this.Subject);
-                mail.Body = await ts.TransformAsync(@this.Body);
-                mail.IsBodyHtml = @this.IsBodyHtml;
-            }
-
-            return mail;
-        }
-
-        internal static MailMessage ToMailMessage(this IEmailInfo @this, params object[] transformData)
-        {
-            var mail = new MailMessage();
-
-            //Remove the AngledBracketTokenExtractor from Transformer as it might impacts to the html format. 
-            using (var ts = CreateEmailTransformer(transformData))
-            {
-                mail.To.From(@this.ToEmails, ts);
-                mail.CC.From(@this.CcEmails, ts);
-                mail.Bcc.From(@this.BccEmails, ts);
-
-                mail.Subject = ts.Transform(@this.Subject);
-                mail.Body = ts.Transform(@this.Body);
-                mail.IsBodyHtml = @this.IsBodyHtml;
-            }
-
-            return mail;
         }
     }
 }

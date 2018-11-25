@@ -1,22 +1,40 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>HBD.Services.Configuration</AssemblyName>
     <RootNamespace>HBD.Services.Configuration</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Duy Hoang</Authors>
+    <Company>HBD</Company>
+    <Description>This is a service that allows loading the configuration from various sources.
+      The ConfigurationService will cache the configuration in the Cache service for the subsequence use.
+      Once the source config has changed, or the cache expired then the service will call the Adapter again to reload the latest version of config.</Description>
+    <Copyright>@2019 drinkcoding.net</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/baoduy/HBD.Services</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/baoduy/Images/master/NugetLogo.PNG</PackageIconUrl>
+    <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Configuration service</PackageTags>
+    <Version>1.0.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HBD.Caching" Version="1.0.0-preview4" />
-    <PackageReference Include="HBD.Framework" Version="2.0.0" />
-    <PackageReference Include="HBD.ServiceLocator" Version="1.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="HBD.Framework" Version="2.1.2.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Caching.Abstractions">
+      <HintPath>C:\Users\hoangd\.nuget\packages\microsoft.extensions.caching.abstractions\2.1.2\lib\netstandard2.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Update="NETStandard.Library" Version="2.0.0" />
   </ItemGroup>
-
-  <Import Project="..\HBD.Services.Configuration.Share\HBD.Services.ConfigurationService.Share.projitems" Label="Shared" />
 
 </Project>

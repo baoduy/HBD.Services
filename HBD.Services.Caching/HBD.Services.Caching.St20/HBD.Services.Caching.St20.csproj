@@ -1,17 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>HBD.Services.Caching</AssemblyName>
     <RootNamespace>HBD.Services.Caching</RootNamespace>
+    <Description>The Caching service for .Net developers. This service originally in HBD.Framework package.
+      Providing the flexible way to develop the caching for .Net application not only Memory caching but also the other caching services like Redis, file, Web API and Database caching.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0.1</Version>
+    <Authors>Duy Hoang</Authors>
+    <Company>HBDDuy Hoang</Company>
+    <Copyright>@2018 drunkcoding</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/baoduy/HBD.Services</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/baoduy/Images/master/NugetLogo.PNG</PackageIconUrl>
+    <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Caching Service</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\HBD.Services.Caching.Share\HBD.Services.Caching.Share.projitems" Label="Shared" />
-
-  <Import Project="..\HBD.Services.Caching.StShare\HBD.Services.Caching.StShare.projitems" Label="Shared" />
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>

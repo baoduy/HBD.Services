@@ -1,11 +1,8 @@
 ﻿using HBD.Services.Configuration.Adapters;
 using System;
-using System.Composition;
 
 namespace HBD.Services.Configuration.StTests
 {
-    [Export(typeof(IConfigAdapter)), Shared]
-    [Export]
     class TestJsonConfigAdapter : JsonConfigAdapter<TestItem>
     {
         public TestJsonConfigAdapter() : base("TestData\\json1.json")
