@@ -1,40 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using HBD.Services.Email.Exceptions;
 using HBD.Services.Email.Templates;
 using Newtonsoft.Json;
 
 namespace HBD.Services.Email.Providers
 {
-    public class JsonEmailTemplateProvider : IEmailTemplateProvider
+    public class JsonEmailTemplateProvider : EmailTemplateProvider
     {
-        private bool _initialized = false;
+        #region Fields
+
         private readonly string _configFile;
 
-        public IReadOnlyCollection<IEmailTemplate> Collection { get; private set; }
 
-        public JsonEmailTemplateProvider(string configFile) => _configFile = configFile;
+        #endregion Fields
 
-        public async Task<IEmailTemplate> GetTemplate(string templateName)
+        #region Constructors
+
+        public JsonEmailTemplateProvider(string configFile)
         {
-            await EnsureInitialized().ConfigureAwait(false);
-            return Collection.FirstOrDefault(t => t.Name.Equals(templateName, StringComparison.OrdinalIgnoreCase));
+            _configFile = Path.GetFullPath(configFile);
         }
 
-        private static async Task<string> ReadToAsync(string file)
-        {
-            using (var reader = File.OpenText(file))
-                return await reader.ReadToEndAsync().ConfigureAwait(false);
-        }
+        #endregion Constructors
 
-        private async Task EnsureInitialized()
-        {
-            if (_initialized) return;
+        #region Properties
 
+        protected override async System.Threading.Tasks.Task<IEnumerable<EmailTemplate>> LoadTemplatesAsync()
+        {
             if (!File.Exists(_configFile))
                 throw new FileNotFoundException(_configFile);
 
@@ -43,31 +35,19 @@ namespace HBD.Services.Email.Providers
             if (string.IsNullOrWhiteSpace(fileText))
                 throw new InvalidDataException(_configFile);
 
-            var templates = JsonConvert.DeserializeObject<EmailTemplate[]>(fileText);
-
-            //Reading Body
-            foreach (var template in templates)
-            {
-                if (!string.IsNullOrEmpty(template.BodyFile) && !File.Exists(template.BodyFile))
-                    template.BodyFile = Path.Combine(Path.GetDirectoryName(_configFile) ?? AppDomain.CurrentDomain.BaseDirectory, template.BodyFile);
-
-                if (!template.IsValid)
-                    throw new InvalidTemplateException(template);
-
-                if (!string.IsNullOrEmpty(template.BodyFile))
-                    template.Body = await ReadToAsync(template.BodyFile);
-            }
-
-            Collection = new ReadOnlyCollection<IEmailTemplate>(new List<IEmailTemplate>(templates));
-
-            _initialized = true;
+            return JsonConvert.DeserializeObject<EmailTemplate[]>(fileText);
         }
 
-        public void Dispose()
-        {
+        #endregion Properties
 
-        }
+        #region Methods
 
 
+
+
+
+
+
+        #endregion Methods
     }
 }

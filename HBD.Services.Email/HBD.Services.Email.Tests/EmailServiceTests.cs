@@ -1,20 +1,28 @@
-﻿using System.Linq;
-using System.Net.Mail;
-using System.Threading.Tasks;
-using FluentAssertions;
-using HBD.Services.Email.Configurations;
+﻿using FluentAssertions;
 using HBD.Services.Email.Providers;
+using HBD.Services.Email.Templates;
 using HBD.Services.Transformation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using netDumbster.smtp;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace HBD.Services.Email.Tests
 {
     [TestClass]
     public class EmailServiceTests
     {
+        #region Fields
+
         private static SimpleSmtpServer _smtpServer;
+
+        #endregion Fields
+
+        #region Methods
+
         [AssemblyInitialize]
         public static void AppDomainSetup(TestContext context)
             => _smtpServer = SimpleSmtpServer.Start(25);
@@ -36,7 +44,6 @@ namespace HBD.Services.Email.Tests
 
             using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()))
             {
-
                 var mail = await mailProvider.GetMailMessageAsync("Duy",
                     new object[]
                     {
@@ -56,7 +63,6 @@ namespace HBD.Services.Email.Tests
                 mail.Body.Should().Contain("Duy Hoang");
             }
 
-
             emailTemplateProviderMoq.VerifyAll();
         }
 
@@ -72,16 +78,13 @@ namespace HBD.Services.Email.Tests
                 Body = "Hello [Name]",
             });
 
-            using (var mailService = new EmailService(
-                new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()), new EmailOptions
+            using (var mailService = new SmtpEmailService(
+                new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()), new SmtpEmailOptions
                 {
                     FromEmailAddress = new MailAddress("drunkcoding@outlook.net"),
                     SmtpClientFactory = () => new SmtpClient("localhost", 25)
                 }))
             {
-
-
-
                 await mailService.SendAsync("Duy", new object[]
                 {
                     new
@@ -95,5 +98,40 @@ namespace HBD.Services.Email.Tests
 
             _smtpServer.ReceivedEmailCount.Should().BeGreaterOrEqualTo(1);
         }
+
+        [TestMethod]
+        public async Task Test_SendEmail_ByTemplate_WithDictionnary()
+        {
+            _smtpServer.ClearReceivedEmail();
+
+            var emailTemplateProviderMoq = new Mock<IEmailTemplateProvider>();
+            emailTemplateProviderMoq.Setup(e => e.GetTemplate(It.IsAny<string>())).ReturnsAsync(new EmailTemplate("Duy")
+            {
+                ToEmails = "[DuyEmail],{HBDEmail},hoang@hbd.com",
+                Body = "Hello [Name]",
+            });
+
+            using (var mailService = new SmtpEmailService(
+                new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()), new SmtpEmailOptions
+                {
+                    FromEmailAddress = new MailAddress("drunkcoding@outlook.net"),
+                    SmtpClientFactory = () => new SmtpClient("localhost", 25)
+                }))
+            {
+                await mailService.SendAsync("Duy", new object[]
+                {
+                    new Dictionary<string,object>
+                    {
+                        ["DuyEmail"] = "drunkcoding@outlook.net",
+                        ["HBDEmail"] = "duy@hbd.net",
+                        ["Name"] = "Duy Hoang"
+                    }
+                });
+            }
+
+            _smtpServer.ReceivedEmailCount.Should().BeGreaterOrEqualTo(1);
+        }
+
+        #endregion Methods
     }
 }

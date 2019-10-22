@@ -14,7 +14,7 @@
     "CcEmails": "baoduy2412@yahoo.com,[Duy];[OtherEmail]",
     "BccEmails": "baoduy2412@yahoo.com,[Duy];[OtherEmail]",
     "Subject": "Test Email",
-    "BodyFile": "TestData\\Body.html",
+    "BodyFile": "TestData/Body.html",
     "BodyHtml": true
   }
 ]

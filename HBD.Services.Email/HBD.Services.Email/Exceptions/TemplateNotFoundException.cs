@@ -4,6 +4,8 @@ namespace HBD.Services.Email.Exceptions
 {
     public sealed class TemplateNotFoundException : Exception
     {
+        #region Constructors
+
         public TemplateNotFoundException()
         {
         }
@@ -15,5 +17,7 @@ namespace HBD.Services.Email.Exceptions
         public TemplateNotFoundException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Constructors
     }
 }

@@ -1,13 +1,15 @@
-﻿using System;
+﻿using HBD.Services.Email.Exceptions;
+using System;
 using System.Threading.Tasks;
-using HBD.Services.Email.Exceptions;
 
 namespace HBD.Services.Email
 {
     public interface IEmailService : IDisposable
     {
+        #region Methods
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="templateName"></param>
         /// <param name="transformData"></param>
@@ -24,5 +26,7 @@ namespace HBD.Services.Email
         /// <exception cref="ArgumentNullException">when email is null</exception>
         /// <returns></returns>
         Task SendAsync(System.Net.Mail.MailMessage email);
+
+        #endregion Methods
     }
 }
