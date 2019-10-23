@@ -1,19 +1,31 @@
-﻿#region using
-
+﻿using HBD.Framework.Core;
+using HBD.Framework.Data;
+using HBD.Framework.Data.Base;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using HBD.Framework.Core;
-using HBD.Framework.Data;
-using HBD.Framework.Data.Base;
-
-#endregion
 
 namespace HBD.Services.Sql
 {
     public class SqlClientAdapter : DataClientAdapter
     {
-        #region Public Methods
+        #region Constructors
+
+        public SqlClientAdapter(string nameOrConnectionString) : base(nameOrConnectionString)
+        {
+        }
+
+        public SqlClientAdapter(DbConnectionStringBuilder connectionString) : base(connectionString)
+        {
+        }
+
+        public SqlClientAdapter(IDbConnection connection) : base(connection)
+        {
+        }
+
+        #endregion Constructors
+
+        #region Methods
 
         /// <summary>
         ///     Insert DataTable to SQL using SqlBulkCopy. DataTable should have the name according with
@@ -40,35 +52,15 @@ namespace HBD.Services.Sql
             }
         }
 
-        #endregion Public Methods
-
-        #region Constructors
-
-        public SqlClientAdapter(string nameOrConnectionString) : base(nameOrConnectionString)
-        {
-        }
-
-        public SqlClientAdapter(DbConnectionStringBuilder connectionString) : base(connectionString)
-        {
-        }
-
-        public SqlClientAdapter(IDbConnection connection) : base(connection)
-        {
-        }
-
-        #endregion Constructors
-
-        #region Protected Virtual Methods
-
         protected override IDbConnection CreateConnection() => new SqlConnection(ConnectionString.ConnectionString);
-
-        protected override IDataParameter CreateParameter(string name, object value) => new SqlParameter(name, value);
 
         protected override DbConnectionStringBuilder CreateConnectionString(string connectionString)
             => new SqlConnectionStringBuilder(connectionString);
 
-        protected virtual SqlBulkCopy CreateSqlBulkCopy() => new SqlBulkCopy((SqlConnection) Connection);
+        protected override IDataParameter CreateParameter(string name, object value) => new SqlParameter(name, value);
 
-        #endregion Protected Virtual Methods
+        protected virtual SqlBulkCopy CreateSqlBulkCopy() => new SqlBulkCopy((SqlConnection)Connection);
+
+        #endregion Methods
     }
 }

@@ -7,6 +7,8 @@ namespace HBD.Services.Transformation.Convertors
     /// </summary>
     public interface IValueFormatter
     {
+        #region Methods
+
         /// <summary>
         /// Convert Value to String
         /// </summary>
@@ -14,5 +16,7 @@ namespace HBD.Services.Transformation.Convertors
         /// <param name="value">The extracted value from data</param>
         /// <returns></returns>
         string Convert(IToken token, object value);
+
+        #endregion Methods
     }
 }

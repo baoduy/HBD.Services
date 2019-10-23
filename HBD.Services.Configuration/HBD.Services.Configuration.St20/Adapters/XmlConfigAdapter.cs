@@ -1,5 +1,4 @@
-﻿using HBD.Framework.Attributes;
-using System;
+﻿using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -8,20 +7,26 @@ namespace HBD.Services.Configuration.Adapters
 {
     public class XmlConfigAdapter<TConfig> : FileConfigAdapter<TConfig> where TConfig : class
     {
-        public XmlConfigAdapter([NotNull] string filePath) : base(filePath)
+        #region Constructors
+
+        public XmlConfigAdapter( string filePath) : base(filePath)
         {
         }
 
-        public XmlConfigAdapter([NotNull] FileFinder fileFinder) : base(fileFinder)
+        public XmlConfigAdapter( FileFinder fileFinder) : base(fileFinder)
         {
         }
 
-        protected override void Validate()
-        {
-            base.Validate();
+        #endregion Constructors
 
-            if (!FilePath.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
-                throw new NotSupportedException("Only XML file is supported");
+        #region Methods
+
+        protected override TConfig Deserialize(string text)
+        {
+            var xmlserializer = new XmlSerializer(typeof(TConfig));
+
+            using (var reader = new StringReader(text))
+                return xmlserializer.Deserialize(reader) as TConfig;
         }
 
         protected override string Serialize(TConfig config)
@@ -36,12 +41,14 @@ namespace HBD.Services.Configuration.Adapters
             }
         }
 
-        protected override TConfig Deserialize(string text)
+        protected override void Validate()
         {
-            var xmlserializer = new XmlSerializer(typeof(TConfig));
+            base.Validate();
 
-            using (var reader = new StringReader(text))
-                return xmlserializer.Deserialize(reader) as TConfig;
+            if (!FilePath.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                throw new NotSupportedException("Only XML file is supported");
         }
+
+        #endregion Methods
     }
 }

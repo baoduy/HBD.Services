@@ -1,28 +1,24 @@
-﻿#region using
-
+﻿using CsvHelper;
+using HBD.Framework.Data.Base;
+using HBD.Framework.Data.GetSetters;
+using HBD.Framework.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using CsvHelper;
-using HBD.Framework;
-using HBD.Framework.Data.Base;
-using HBD.Framework.Data.GetSetters;
-
-#endregion
 
 namespace HBD.Services.Csv
 {
     public class CsvAdapter : DataFileAdapterBase
     {
+        #region Constructors
+
         public CsvAdapter(string documentFile) : base(documentFile)
         {
         }
 
-        protected override void Dispose(bool isDisposing) { }
+        #endregion Constructors
 
-        public override void Save()
-        {
-        }
+        #region Methods
 
         public override IGetSetterCollection Read(bool firstRowIsHeader = true)
             => Read(new Services.Csv.ReadCsvOption { FirstRowIsHeader = firstRowIsHeader });
@@ -41,7 +37,7 @@ namespace HBD.Services.Csv
                 {
                     reader.Read();
                     reader.ReadHeader();
-                    
+
                     header = new ArrayGetSetter(reader.Context.HeaderRecord);
                 }
 
@@ -50,6 +46,10 @@ namespace HBD.Services.Csv
             }
 
             return new ArrayGetSetterCollection(header, list);
+        }
+
+        public override void Save()
+        {
         }
 
         public override void Write(IGetSetterCollection data, bool ignoreHeader = false)
@@ -73,7 +73,7 @@ namespace HBD.Services.Csv
                         var val = item;
 
                         //Apply NumericFormat before write
-                        if (option.NumericFormat.IsNotNullOrEmpty() && (item.IsNotNumericType() || item.IsNumber()))
+                        if (option.NumericFormat.IsNotNullOrEmpty() && (item.IsNotNumericType() || item.IsNumericType()))
                             val = string.Format(option.NumericFormat, item);
 
                         //Apply DateFormat before write
@@ -87,5 +87,11 @@ namespace HBD.Services.Csv
                 }
             }
         }
+
+        protected override void Dispose(bool isDisposing)
+        {
+        }
+
+        #endregion Methods
     }
 }

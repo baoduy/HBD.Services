@@ -1,21 +1,16 @@
-﻿using System;
+﻿using HBD.Services.Transformation.TokenExtractors;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using HBD.Services.Transformation.TokenExtractors;
 
 namespace HBD.Services.Transformation.TokenResolvers
 {
     public class TokenResolver : ITokenResolver
     {
-        protected virtual PropertyInfo GetProperty(object data, string propertyName)
-            => data.GetType().GetProperty(propertyName,
-                BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public)
-            //BindingFlags.NonPublic and BindingFlags.Public are not work together
-            ?? data.GetType().GetProperty(propertyName,
-                   BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.NonPublic);
+        #region Methods
 
         /// <summary>
         /// Get the first not null value of the public property of data.
@@ -59,5 +54,15 @@ namespace HBD.Services.Transformation.TokenResolvers
 
         public Task<object> ResolveAsync(IToken token, params object[] data)
             => Task.Run(() => this.Resolve(token, data));
+
+        protected virtual PropertyInfo GetProperty(object data, string propertyName)
+                            => data.GetType().GetProperty(propertyName,
+                BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public)
+
+            //BindingFlags.NonPublic and BindingFlags.Public are not work together
+            ?? data.GetType().GetProperty(propertyName,
+                   BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.NonPublic);
+
+        #endregion Methods
     }
 }

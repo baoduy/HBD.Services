@@ -2,6 +2,8 @@
 {
     public class ReferencedColumnInfo
     {
+        #region Constructors
+
         public ReferencedColumnInfo(string referencedTableSchema, string referencedTableName, string referencedColumn)
             : this(new DbName(referencedTableSchema, referencedTableName), referencedColumn)
         {
@@ -13,7 +15,14 @@
             ReferencedColumn = referencedColumn;
         }
 
-        public DbName ReferencedTable { get; }
+        #endregion Constructors
+
+        #region Properties
+
         public string ReferencedColumn { get; }
+
+        public DbName ReferencedTable { get; }
+
+        #endregion Properties
     }
 }

@@ -1,32 +1,33 @@
-﻿using System.Linq;
-using HBD.Framework.Attributes;
+﻿using HBD.Framework.Attributes;
 using HBD.Framework.Core;
+using System.Linq;
 
 namespace HBD.Services.Compression.Zip
 {
     public class ZipExtractOption : ZipOption
     {
+        #region Constructors
+
         internal ZipExtractOption(string zipFile) => ZipFile = zipFile;
 
-        internal protected string OutputFolder { get; private set; }
+        #endregion Constructors
 
-        internal protected string ZipFile { get; }
+        #region Properties
 
         internal bool IsOverwriteIfExisted { get; private set; } = false;
+
+        protected internal string OutputFolder { get; private set; }
+
+        protected internal string ZipFile { get; }
+
+        #endregion Properties
+
+        #region Methods
 
         public ZipExtractOption OverwriteFilesIfExisted()
         {
             IsOverwriteIfExisted = true;
             return this;
-        }
-
-        /// <summary>
-        /// Extect to the same folder of zip file.
-        /// </summary>
-        /// <returns></returns>
-        public string[] ToTheSameFolder()
-        {
-            return GetOrCreateAdapter().Extract(this).ToArray();
         }
 
         /// <summary>
@@ -41,5 +42,16 @@ namespace HBD.Services.Compression.Zip
 
             return GetOrCreateAdapter().Extract(this).ToArray();
         }
+
+        /// <summary>
+        /// Extect to the same folder of zip file.
+        /// </summary>
+        /// <returns></returns>
+        public string[] ToTheSameFolder()
+        {
+            return GetOrCreateAdapter().Extract(this).ToArray();
+        }
+
+        #endregion Methods
     }
 }

@@ -1,6 +1,4 @@
-﻿using HBD.Framework;
-using HBD.Framework.Attributes;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -8,35 +6,40 @@ namespace HBD.Services.Configuration.Adapters
 {
     public abstract class FileConfigAdapter<TConfig> : IConfigAdapter<TConfig> where TConfig : class
     {
+        #region Fields
+
         private DateTime _lastLoaded = DateTime.MinValue;
 
-        protected FileConfigAdapter([NotNull]string filePath, TimeSpan? expiration = null)
+        #endregion Fields
+
+        #region Constructors
+
+        protected FileConfigAdapter(string filePath, TimeSpan? expiration = null)
         {
             FilePath = filePath;
             Expiration = expiration;
         }
 
-        protected FileConfigAdapter([NotNull]FileFinder fileFinder, TimeSpan? expiration = null)
+        protected FileConfigAdapter(FileFinder fileFinder, TimeSpan? expiration = null)
         {
             FileFinder = fileFinder;
             Expiration = expiration;
         }
 
-        private FileFinder FileFinder { get; }
+        #endregion Constructors
+
+        #region Properties
 
         /// <inheritdoc />
         public virtual TimeSpan? Expiration { get; }
 
         protected string FilePath { get; private set; }
 
-        protected virtual void Validate()
-        {
-            if (FileFinder != null && FilePath.IsNullOrEmpty())
-                FilePath = FileFinder.Find();
+        private FileFinder FileFinder { get; }
 
-            if (!File.Exists(FilePath))
-                throw new FileNotFoundException(FilePath);
-        }
+        #endregion Properties
+
+        #region Methods
 
         public virtual bool HasChanged()
         {
@@ -45,25 +48,6 @@ namespace HBD.Services.Configuration.Adapters
             var lasModify = File.GetLastWriteTime(FilePath);
             return lasModify > _lastLoaded;
         }
-
-        //public TConfig Load()
-        //{
-        //    Validate();
-        //    var text = File.ReadAllText(FilePath);
-        //    _lastLoaded = DateTime.Now;
-        //    return Deserialize(text);
-        //}
-
-        //public void Save(TConfig config)
-        //{
-        //    Validate();
-        //    var val = Serialize(config);
-        //    File.WriteAllText(FilePath, val);
-        //    _lastLoaded = DateTime.Now;
-        //}
-
-        protected abstract TConfig Deserialize(string text);
-        protected abstract string Serialize(TConfig config);
 
         public async Task<TConfig> LoadAsync()
         {
@@ -77,6 +61,35 @@ namespace HBD.Services.Configuration.Adapters
             }
         }
 
+        protected abstract TConfig Deserialize(string text);
+
+        //public void Save(TConfig config)
+        //{
+        //    Validate();
+        //    var val = Serialize(config);
+        //    File.WriteAllText(FilePath, val);
+        //    _lastLoaded = DateTime.Now;
+        //}
+        protected abstract string Serialize(TConfig config);
+
+        protected virtual void Validate()
+        {
+            if (FileFinder != null && string.IsNullOrEmpty(FilePath))
+                FilePath = FileFinder.Find();
+
+            if (!File.Exists(FilePath))
+                throw new FileNotFoundException(FilePath);
+        }
+
+        #endregion Methods
+
+        //public TConfig Load()
+        //{
+        //    Validate();
+        //    var text = File.ReadAllText(FilePath);
+        //    _lastLoaded = DateTime.Now;
+        //    return Deserialize(text);
+        //}
         //public async Task SaveAsync(TConfig config)
         //{
         //    Validate();

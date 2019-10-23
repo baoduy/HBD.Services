@@ -1,20 +1,37 @@
-﻿using System;
+﻿using HBD.Services.Email.Exceptions;
+using HBD.Services.Email.Templates;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using HBD.Services.Email.Exceptions;
-using HBD.Services.Email.Templates;
 
 namespace HBD.Services.Email.Providers
 {
     public abstract class EmailTemplateProvider : IEmailTemplateProvider
     {
-        protected IDictionary<string, IEmailTemplate> Templates { get; private set; }
+        #region Fields
 
         private bool _initialized;
-        public virtual void Dispose() { }
+
+        #endregion Fields
+
+        #region Constructors
 
         protected EmailTemplateProvider() => Templates = new Dictionary<string, IEmailTemplate>();
+
+        #endregion Constructors
+
+        #region Properties
+
+        protected IDictionary<string, IEmailTemplate> Templates { get; private set; }
+
+        #endregion Properties
+
+        #region Methods
+
+        public virtual void Dispose()
+        {
+        }
 
         public async Task<IEmailTemplate> GetTemplate(string templateName)
         {
@@ -57,5 +74,7 @@ namespace HBD.Services.Email.Providers
 
             _initialized = true;
         }
+
+        #endregion Methods
     }
 }

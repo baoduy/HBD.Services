@@ -1,18 +1,20 @@
-﻿using System;
-using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using HBD.Services.Email.Builders;
 using HBD.Services.Email.Exceptions;
 using HBD.Services.Email.Providers;
 using HBD.Services.Email.Templates;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
 
 namespace HBD.Services.Email.Tests
 {
     [TestClass]
     public class InlineTemplateConfigTests
     {
+        #region Methods
+
         [TestMethod]
         public void BuildAnEmail()
         {
@@ -35,28 +37,23 @@ namespace HBD.Services.Email.Tests
             t.Subject.Should().Be("Email Subject");
             t.Body.Should().Be("Email body");
             ((EmailTemplate)t).IsValid.Should().BeTrue();
-
         }
 
         [TestMethod]
-        public void BuildTwoEmail()
+        [ExpectedException(typeof(ArgumentException))]
+        public void BuildDuplicateEmailName()
         {
-            var b = EmailTemplateBuilder.New("Template 1")
-                    .To("duy@hbd.com")
-                    .Cc("hoang@hbd.com")
-                    .Bcc("steven@hbd.com")
-                    .With()
-                    .Subject("Email Subject")
-                    .Body("Email body")
-                .Add("Template 2")
+            _ = EmailTemplateBuilder.New("Template 1")
                     .To("duy@hbd.com")
                     .With()
-                    .Subject("Email Subject")
-                    .BodyFrom("TestData/Body.html")
-                .Build();
-
-            b.Should().HaveCount(2);
-            b.OfType<EmailTemplate>().All(b => b.IsValid).Should().BeTrue();
+                     .Subject("Email Subject")
+                     .Body("Email body")
+                 .Add("Template 1")
+                     .To("duy@hbd.com")
+                    .With()
+                     .Subject("Email Subject")
+                     .BodyFrom("TestData/Body.html")
+                 .Build();
         }
 
         [TestMethod]
@@ -82,20 +79,24 @@ namespace HBD.Services.Email.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void BuildDuplicateEmailName()
+        public void BuildTwoEmail()
         {
-            _ = EmailTemplateBuilder.New("Template 1")
+            var b = EmailTemplateBuilder.New("Template 1")
+                    .To("duy@hbd.com")
+                    .Cc("hoang@hbd.com")
+                    .Bcc("steven@hbd.com")
+                    .With()
+                    .Subject("Email Subject")
+                    .Body("Email body")
+                .Add("Template 2")
                     .To("duy@hbd.com")
                     .With()
-                     .Subject("Email Subject")
-                     .Body("Email body")
-                 .Add("Template 1")
-                     .To("duy@hbd.com")
-                    .With()
-                     .Subject("Email Subject")
-                     .BodyFrom("TestData/Body.html")
-                 .Build();
+                    .Subject("Email Subject")
+                    .BodyFrom("TestData/Body.html")
+                .Build();
+
+            b.Should().HaveCount(2);
+            b.OfType<EmailTemplate>().All(b => b.IsValid).Should().BeTrue();
         }
 
         [TestMethod]
@@ -117,5 +118,7 @@ namespace HBD.Services.Email.Tests
             p.Should().BeOfType<InlineEmailTemplateProvider>();
             (await p.GetTemplate("Template 1")).Should().NotBeNull();
         }
+
+        #endregion Methods
     }
 }

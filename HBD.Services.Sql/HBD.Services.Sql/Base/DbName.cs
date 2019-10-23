@@ -1,11 +1,7 @@
-﻿#region using
-
-using System;
-using HBD.Framework;
+﻿using HBD.Framework;
 using HBD.Framework.Core;
 using HBD.Framework.Data;
-
-#endregion
+using System;
 
 namespace HBD.Services.Sql.Base
 {
@@ -19,7 +15,13 @@ namespace HBD.Services.Sql.Base
     /// </summary>
     public sealed class DbName : IEquatable<DbName>, IEquatable<string>
     {
+        #region Fields
+
         private const string DefaultSchema = "dbo";
+
+        #endregion Fields
+
+        #region Constructors
 
         public DbName(string name) : this(DefaultSchema, name)
         {
@@ -38,11 +40,27 @@ namespace HBD.Services.Sql.Base
             Name = name;
         }
 
-        public string Schema { get; }
-        public string Name { get; }
+        #endregion Constructors
+
+        #region Properties
+
         public string FullName => Common.GetFullName(Schema, Name);
 
-        public override string ToString() => FullName;
+        public string Name { get; }
+
+        public string Schema { get; }
+
+        #endregion Properties
+
+        #region Methods
+
+        public static implicit operator DbName(string fullName) => Parse(fullName);
+
+        public static implicit operator string(DbName name) => name.FullName;
+
+        public static bool operator !=(DbName tbA, object tbB) => !tbA?.Equals(tbB) ?? false;
+
+        public static bool operator ==(DbName tbA, object tbB) => tbA?.Equals(tbB) ?? false;
 
         public static DbName Parse(string fullName)
         {
@@ -88,9 +106,6 @@ namespace HBD.Services.Sql.Base
             return false;
         }
 
-        //Two objects that are equal return hash codes that are equal. However, the reverse is not true.
-        public override int GetHashCode() => Schema.GetHashCode() + Name.GetHashCode();
-
         public bool Equals(DbName other)
         {
             return this.FullName.EqualsIgnoreCase(other?.FullName);
@@ -101,12 +116,11 @@ namespace HBD.Services.Sql.Base
             return Equals(Parse(other));
         }
 
-        public static implicit operator string(DbName name) => name.FullName;
+        //Two objects that are equal return hash codes that are equal. However, the reverse is not true.
+        public override int GetHashCode() => Schema.GetHashCode() + Name.GetHashCode();
 
-        public static implicit operator DbName(string fullName) => Parse(fullName);
+        public override string ToString() => FullName;
 
-        public static bool operator ==(DbName tbA, object tbB) => tbA?.Equals(tbB) ?? false;
-
-        public static bool operator !=(DbName tbA, object tbB) => !tbA?.Equals(tbB) ?? false;
+        #endregion Methods
     }
 }

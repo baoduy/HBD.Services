@@ -1,15 +1,21 @@
-﻿using System;
+﻿using HBD.Services.Transformation.TokenExtractors;
+using System;
 using System.Threading.Tasks;
-using HBD.Services.Transformation.TokenExtractors;
 
 namespace HBD.Services.Transformation
 {
     public interface ITransformerService : IDisposable
     {
+        #region Properties
+
         /// <summary>
         /// The TransformData that sharing for all transforming.
         /// </summary>
-        object[]TransformData { get; }
+        object[] TransformData { get; }
+
+        #endregion Properties
+
+        #region Methods
 
         /// <summary>
         /// Transform template from TransformData and additionalData
@@ -26,5 +32,7 @@ namespace HBD.Services.Transformation
         /// <param name="dataProvider">Dynamic loading data based on Token <see cref="IToken"/></param>
         /// <returns>"Hello Duy. Your drunkcoding@outlook.net had been Approved" with TransformData or dataProvider is new {Name = "Duy", Email= "drunkcoding@outlook.net", ApprovedStatus = "Approved"}</returns>
         Task<string> TransformAsync(string template, Func<IToken, Task<object>> dataProvider);
+
+        #endregion Methods
     }
 }

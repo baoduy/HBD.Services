@@ -1,17 +1,17 @@
-﻿#region using
-
-using System;
-using System.Data;
-using HBD.Framework;
+﻿using HBD.Framework;
 using HBD.Framework.Core;
 using HBD.Services.Sql.Base;
-
-#endregion
+using System;
+using System.Data;
 
 namespace HBD.Services.Sql.Extensions
 {
     public static class SqlClientExtensions
     {
+        #region Methods
+
+        public static Type GetRuntimeType(this ColumnInfo @this) => ToRuntimeType(@this.DataType);
+
         public static T GetValue<T>(this IDataReader @this, string columnName)
         {
             Guard.ArgumentIsNotNull(@this, "IDataReader");
@@ -27,51 +27,6 @@ namespace HBD.Services.Sql.Extensions
 
             var value = @this[columnIndex];
             return value.ChangeType<T>();
-        }
-
-        public static SqlDbType ToSqlDbType(this Type @this)
-        {
-            switch (Type.GetTypeCode(@this))
-            {
-                case TypeCode.Boolean:
-                    return SqlDbType.Bit;
-
-                case TypeCode.Char:
-                    return SqlDbType.Char;
-
-                case TypeCode.SByte:
-                case TypeCode.Byte:
-                    return SqlDbType.Binary;
-
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                    return SqlDbType.Int;
-
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                    return SqlDbType.BigInt;
-
-                case TypeCode.Single:
-                    return SqlDbType.Float;
-
-                case TypeCode.Double:
-                case TypeCode.Decimal:
-                    return SqlDbType.Decimal;
-
-                case TypeCode.DateTime:
-                    return SqlDbType.DateTime;
-
-                case TypeCode.String:
-                    return SqlDbType.NVarChar;
-
-                //case TypeCode.Empty:
-                //case TypeCode.Object:
-                //case TypeCode.DBNull:
-                default:
-                    return SqlDbType.VarBinary;
-            }
         }
 
         public static Type ToRuntimeType(SqlDbType sqlType)
@@ -143,6 +98,51 @@ namespace HBD.Services.Sql.Extensions
             }
         }
 
+        public static SqlDbType ToSqlDbType(this Type @this)
+        {
+            switch (Type.GetTypeCode(@this))
+            {
+                case TypeCode.Boolean:
+                    return SqlDbType.Bit;
+
+                case TypeCode.Char:
+                    return SqlDbType.Char;
+
+                case TypeCode.SByte:
+                case TypeCode.Byte:
+                    return SqlDbType.Binary;
+
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return SqlDbType.Int;
+
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                    return SqlDbType.BigInt;
+
+                case TypeCode.Single:
+                    return SqlDbType.Float;
+
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                    return SqlDbType.Decimal;
+
+                case TypeCode.DateTime:
+                    return SqlDbType.DateTime;
+
+                case TypeCode.String:
+                    return SqlDbType.NVarChar;
+
+                //case TypeCode.Empty:
+                //case TypeCode.Object:
+                //case TypeCode.DBNull:
+                default:
+                    return SqlDbType.VarBinary;
+            }
+        }
+
         public static SqlDbType ToSqlDbType(this string @this)
         {
             if (@this.IsNullOrEmpty()) return SqlDbType.NVarChar;
@@ -151,67 +151,96 @@ namespace HBD.Services.Sql.Extensions
             {
                 case "bigint":
                     return SqlDbType.BigInt;
+
                 case "binary":
                     return SqlDbType.Binary;
+
                 case "bit":
                     return SqlDbType.Bit;
+
                 case "char":
                     return SqlDbType.Char;
+
                 case "date":
                     return SqlDbType.Date;
+
                 case "datetime":
                     return SqlDbType.DateTime;
+
                 case "datetime2":
                     return SqlDbType.DateTime2;
+
                 case "datetimeoffset":
                     return SqlDbType.DateTimeOffset;
+
                 case "decimal":
                     return SqlDbType.Decimal;
+
                 case "float":
                     return SqlDbType.Float;
+
                 case "image":
                     return SqlDbType.Image;
+
                 case "int":
                     return SqlDbType.Int;
+
                 case "money":
                     return SqlDbType.Money;
+
                 case "nchar":
                     return SqlDbType.NChar;
+
                 case "ntext":
                     return SqlDbType.NText;
+
                 case "numeric":
                     return SqlDbType.Decimal;
+
                 case "nvarchar":
                     return SqlDbType.NVarChar;
+
                 case "real":
                     return SqlDbType.Real;
+
                 case "rowversion":
                     return SqlDbType.Binary;
+
                 case "smalldatetime":
                     return SqlDbType.SmallDateTime;
+
                 case "smallint":
                     return SqlDbType.SmallInt;
+
                 case "smallmoney":
                     return SqlDbType.SmallMoney;
+
                 case "text":
                     return SqlDbType.Text;
+
                 case "time":
                     return SqlDbType.Time;
+
                 case "timestamp":
                     return SqlDbType.Timestamp;
+
                 case "tinyint":
                     return SqlDbType.TinyInt;
+
                 case "uniqueidentifier":
                     return SqlDbType.UniqueIdentifier;
+
                 case "varbinary":
                     return SqlDbType.VarBinary;
+
                 case "varchar":
                     return SqlDbType.VarChar;
+
                 default:
                     return SqlDbType.VarBinary;
             }
         }
 
-        public static Type GetRuntimeType(this ColumnInfo @this) => ToRuntimeType(@this.DataType);
+        #endregion Methods
     }
 }

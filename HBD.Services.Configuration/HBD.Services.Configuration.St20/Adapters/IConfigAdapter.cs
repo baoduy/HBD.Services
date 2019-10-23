@@ -4,20 +4,35 @@ using System.Threading.Tasks;
 namespace HBD.Services.Configuration.Adapters
 {
 #if NETSTANDARD2_0 || NETSTANDARD1_6
+
     /// <summary>
     /// The adapter for IConfigurationService
     /// To export this adapter to Mef by using below Export pattern.
     /// [Export(typeof(IConfigAdapter)), Shared]
     /// </summary>
 #else
+
     /// <summary>
     /// The adapter for IConfigurationService
     /// To export this adapter to Mef by using below Export pattern.
     ///  [Export(typeof(IConfigAdapter)), PartCreationPolicy(CreationPolicy.Shared)]
     /// </summary>
 #endif
+
     public interface IConfigAdapter
     {
+        #region Properties
+
+        /// <summary>
+        /// The caching expiration of this configuration.
+        /// If Expiration is Null the default expiration of CacheService will be used.
+        /// </summary>
+        TimeSpan? Expiration { get; }
+
+        #endregion Properties
+
+        #region Methods
+
         /// <summary>
         /// Check whether the config in storage has changed or not.
         /// If the change tracking is not available then just return false.
@@ -26,11 +41,7 @@ namespace HBD.Services.Configuration.Adapters
         /// <returns></returns>
         bool HasChanged();
 
-        /// <summary>
-        /// The caching expiration of this configuration.
-        /// If Expiration is Null the default expiration of CacheService will be used.
-        /// </summary>
-        TimeSpan? Expiration { get; }
+        #endregion Methods
     }
 
     public interface IConfigAdapter<TConfig> : IConfigAdapter where TConfig : class
@@ -41,11 +52,15 @@ namespace HBD.Services.Configuration.Adapters
         ///// <returns></returns>
         //TConfig Load();
 
+        #region Methods
+
         /// <summary>
         /// Load TConfig from storage.
         /// </summary>
         /// <returns></returns>
         Task<TConfig> LoadAsync();
+
+        #endregion Methods
 
         ///// <summary>
         ///// Save the config changes back to the storage.

@@ -1,17 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Text;
-using HBD.Framework.Data.GetSetters;
+﻿using HBD.Framework.Data.GetSetters;
 using HBD.Services.Csv.Tests.TestObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Data;
+using System.IO;
 
 namespace HBD.Services.Csv.Tests
 {
     [TestClass]
     public class CsvTests
     {
+        #region Methods
+
+        [TestMethod]
+        [TestCategory("Fw.DataTableExtensions")]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void LoadFromCSV_CsvFileNotExisted_Test()
+        {
+            var tb = new DataTable().LoadFromCsv("TestData\\AAA.csv", op => op.Delimiter = "|");
+        }
+
         [TestMethod]
         [TestCategory("Fw.DataTableExtensions")]
         public void LoadFromCSV_Customers_FirstRowIsHeader_Test()
@@ -47,15 +55,7 @@ namespace HBD.Services.Csv.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void LoadFromCSV_NullDataTable_Test()
         {
-            var tb = ((DataTable)null).LoadFromCsv("TestData\\Northwind\\Employees.csv", op => op.Delimiter = "|" );
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.DataTableExtensions")]
-        [ExpectedException(typeof(FileNotFoundException))]
-        public void LoadFromCSV_CsvFileNotExisted_Test()
-        {
-            var tb = new DataTable().LoadFromCsv("TestData\\AAA.csv", op => op.Delimiter = "|" );
+            var tb = ((DataTable)null).LoadFromCsv("TestData\\Northwind\\Employees.csv", op => op.Delimiter = "|");
         }
 
         //[TestMethod]
@@ -89,5 +89,7 @@ namespace HBD.Services.Csv.Tests
             Assert.IsTrue(File.Exists(fileName));
             Assert.IsTrue(File.ReadAllLines(fileName).Length > 0);
         }
+
+        #endregion Methods
     }
 }

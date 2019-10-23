@@ -1,8 +1,8 @@
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Threading;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 
 namespace HBD.Services.Configuration.StTests
@@ -10,6 +10,22 @@ namespace HBD.Services.Configuration.StTests
     [TestClass]
     public class ConfigurationServiceTests
     {
+        #region Methods
+
+        [TestMethod]
+        public async Task CreateByConfigurationBuilder()
+        {
+            var service = new ConfigurationService(
+                new ConfigurationOptions()
+                .WithAdapters(new TestConfigAdapter())
+                );
+
+            var t = await service.GetAsync<TestItem>();
+            t.Should().NotBeNull();
+            t.Name.Should().NotBeNullOrEmpty();
+            t.Email.Should().Be("drunkcoding@outlook.com");
+        }
+
         [TestMethod]
         public async Task Load_Config_From_Adapter()
         {
@@ -29,6 +45,55 @@ namespace HBD.Services.Configuration.StTests
             val.Should().NotBeNull();
             a.IsChangedCalled.Should().Be(1);
             a.LoadCalled.Should().BeGreaterOrEqualTo(1);
+        }
+
+        [TestMethod]
+        public async Task Load_Json_File()
+        {
+            var config = new ConfigurationService(new ConfigurationOptions()
+                .WithAdapters(new TestJsonConfigAdapter())
+            );
+
+            var t = await config.GetAsync<TestItem>();
+
+            t.Should().NotBeNull();
+            t.Name.Should().NotBeNullOrEmpty();
+            t.Email.Should().Be("drunkcoding@outlook.com");
+        }
+
+        [TestMethod]
+        public async Task LoadAsync()
+        {
+            var config = new ConfigurationService(new ConfigurationOptions()
+                .WithAdapters(new TestConfigAdapter())
+                );
+
+            var t = await config.GetAsync<TestItem>();
+
+            t.Should().NotBeNull();
+            t.Name.Should().NotBeNullOrEmpty();
+            t.Email.Should().Be("drunkcoding@outlook.com");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void Register_Exception_1()
+        {
+            new ConfigurationOptions()
+                .RegisterFile<TestItem>(new FileFinder().Find("XMLFile1.abc"))
+                .IgnoreCaching();
+        }
+
+        //    var t = service.Get<TestItem>();
+        //    t.Should().NotBeNull();
+        //}
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void Register_Exception_2()
+        {
+            new ConfigurationOptions()
+                .RegisterFile<TestItem>("XMLFile1.abc")
+                .IgnoreCaching();
         }
 
         [TestMethod]
@@ -68,47 +133,7 @@ namespace HBD.Services.Configuration.StTests
             a.LoadCalled.Should().BeGreaterOrEqualTo(2);
         }
 
-        [TestMethod]
-        public async Task Load_Json_File()
-        {
-            var config = new ConfigurationService(new ConfigurationOptions()
-                .WithAdapters(new TestJsonConfigAdapter())
-            );
-
-            var t = await config.GetAsync<TestItem>();
-
-            t.Should().NotBeNull();
-            t.Name.Should().NotBeNullOrEmpty();
-            t.Email.Should().Be("drunkcoding@outlook.com");
-        }
-
-        [TestMethod]
-        public async Task CreateByConfigurationBuilder()
-        {
-            var service = new ConfigurationService(
-                new ConfigurationOptions()
-                .WithAdapters(new TestConfigAdapter())
-                );
-
-            var t = await service.GetAsync<TestItem>();
-            t.Should().NotBeNull();
-            t.Name.Should().NotBeNullOrEmpty();
-            t.Email.Should().Be("drunkcoding@outlook.com");
-        }
-
-        [TestMethod]
-        public async Task LoadAsync()
-        {
-            var config = new ConfigurationService(  new ConfigurationOptions()
-                .WithAdapters(new TestConfigAdapter())
-                );
-
-            var t = await config.GetAsync<TestItem>();
-
-            t.Should().NotBeNull();
-            t.Name.Should().NotBeNullOrEmpty();
-            t.Email.Should().Be("drunkcoding@outlook.com");
-        }
+        #endregion Methods
 
         //[TestMethod]
         //public async Task SaveAsync()
@@ -177,27 +202,5 @@ namespace HBD.Services.Configuration.StTests
         //         .IgnoreCaching()
         //         .IgnoreServiceLocator()
         //         .Build();
-
-        //    var t = service.Get<TestItem>();
-        //    t.Should().NotBeNull();
-        //}
-
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void Register_Exception_1()
-        {
-            new ConfigurationOptions()
-                .RegisterFile<TestItem>(new FileFinder().Find("XMLFile1.abc"))
-                .IgnoreCaching();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void Register_Exception_2()
-        {
-            new ConfigurationOptions()
-                .RegisterFile<TestItem>("XMLFile1.abc")
-                .IgnoreCaching();
-        }
     }
 }

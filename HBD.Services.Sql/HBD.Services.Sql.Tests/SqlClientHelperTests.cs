@@ -1,24 +1,18 @@
-﻿#region using
-
-using System;
-using System.Collections.Generic;
-using HBD.Services.Sql.Base;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-#endregion
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HBD.Services.Sql.Tests
 {
     [TestClass]
     public class SqlClientHelperTests
     {
+        #region Fields
+
         private const string DummyConnection = "Data Source=localhost;Initial Catalog=Dummy;";
 
-        
+        #endregion Fields
 
         //private static SchemaInfo GetSchemaInfo()
         //{
-
         //    using (ShimsContext.Create())
         //    {
         //        //Verify the ExecuteNonQuery will call SqlCommand.ExecuteNonQuery

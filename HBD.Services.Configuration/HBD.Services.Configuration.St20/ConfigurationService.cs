@@ -9,13 +9,17 @@ namespace HBD.Services.Configuration
 {
     public class ConfigurationService : IConfigurationService
     {
-        private bool _isDisposed;
+        #region Fields
+
         private readonly List<IConfigAdapter> _adapters;
         private readonly IMemoryCache _cacheProvider;
         private readonly TimeSpan _defaultExpiration;
         private readonly bool _ignoreCaching;
+        private bool _isDisposed;
 
-        public IReadOnlyCollection<IConfigAdapter> Adapters => _adapters;
+        #endregion Fields
+
+        #region Constructors
 
         public ConfigurationService(ConfigurationOptions options)
         {
@@ -28,42 +32,17 @@ namespace HBD.Services.Configuration
             _adapters.AddRange(options.Adapters);
         }
 
-        private IConfigAdapter<TConfig> GetAdapter<TConfig>() where TConfig : class => _adapters.OfType<IConfigAdapter<TConfig>>().FirstOrDefault();
+        #endregion Constructors
 
-        private void CheckDisposed()
-        {
-            if (_isDisposed)
-                throw new ObjectDisposedException(this.GetType().FullName);
-        }
+        #region Properties
+
+        public IReadOnlyCollection<IConfigAdapter> Adapters => _adapters;
+
+        #endregion Properties
+
+        #region Methods
 
         public void Dispose() => Dispose(true);
-
-        protected virtual void Dispose(bool isDisposing)
-        {
-            _cacheProvider?.Dispose();
-            _adapters.Clear();
-            _isDisposed = isDisposing;
-        }
-
-        private TConfig TryGetFromCache<TConfig>()
-        {
-            var cacheKey = typeof(TConfig).FullName;
-            return _cacheProvider != null ? _cacheProvider.Get<TConfig>(cacheKey) : default(TConfig);
-        }
-
-        private void SetToCache<TConfig>(IConfigAdapter adapter, TConfig config)
-        {
-            if (_ignoreCaching || _cacheProvider == null) return;
-
-            var cacheKey = typeof(TConfig).FullName;
-
-            var t = adapter.Expiration ?? _defaultExpiration;
-            if (t <= TimeSpan.MinValue)
-                t = _defaultExpiration;
-
-            _cacheProvider.Set(cacheKey, config, t);
-        }
-
 
         public async Task<TConfig> GetAsync<TConfig>() where TConfig : class
         {
@@ -84,5 +63,41 @@ namespace HBD.Services.Configuration
 
             return val;
         }
+
+        protected virtual void Dispose(bool isDisposing)
+        {
+            _cacheProvider?.Dispose();
+            _adapters.Clear();
+            _isDisposed = isDisposing;
+        }
+
+        private void CheckDisposed()
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+        }
+
+        private IConfigAdapter<TConfig> GetAdapter<TConfig>() where TConfig : class => _adapters.OfType<IConfigAdapter<TConfig>>().FirstOrDefault();
+
+        private void SetToCache<TConfig>(IConfigAdapter adapter, TConfig config)
+        {
+            if (_ignoreCaching || _cacheProvider == null) return;
+
+            var cacheKey = typeof(TConfig).FullName;
+
+            var t = adapter.Expiration ?? _defaultExpiration;
+            if (t <= TimeSpan.MinValue)
+                t = _defaultExpiration;
+
+            _cacheProvider.Set(cacheKey, config, t);
+        }
+
+        private TConfig TryGetFromCache<TConfig>()
+        {
+            var cacheKey = typeof(TConfig).FullName;
+            return _cacheProvider != null ? _cacheProvider.Get<TConfig>(cacheKey) : default(TConfig);
+        }
+
+        #endregion Methods
     }
 }

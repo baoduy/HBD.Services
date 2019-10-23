@@ -1,48 +1,40 @@
-﻿using HBD.Framework.Attributes;
-using HBD.Services.Configuration.Adapters;
+﻿using HBD.Services.Configuration.Adapters;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace HBD.Services.Configuration
 {
     public class ConfigurationOptions
     {
+        #region Constructors
+
         public ConfigurationOptions() => Adapters = new List<IConfigAdapter>();
 
+        #endregion Constructors
+
+        #region Properties
+
         internal List<IConfigAdapter> Adapters { get; }
+
         internal IMemoryCache CacheProvider { get; private set; }
+
         internal TimeSpan? DefaultExpiration { get; private set; }
+
         internal bool IsIgnoreCaching { get; private set; }
 
-        public ConfigurationOptions WithAdapters(params IConfigAdapter[] configAdapters)
-        {
-            foreach (var item in configAdapters)
-            {
-                if (!Adapters.Contains(item))
-                    Adapters.Add(item);
-            }
-            return this;
-        }
+        #endregion Properties
 
-        public ConfigurationOptions WithMemoryCache(IMemoryCache cacheProvider)
-        {
-            CacheProvider = cacheProvider;
-            return this;
-        }
+        #region Methods
 
         /// <summary>
-        /// The expiration should be from Adapters. However if any adapter is not provided the expiration the this one will be used.
+        /// Not using caching mechanism on the ConfigurationManager.
         /// </summary>
-        /// <param name="expiration"></param>
         /// <returns></returns>
-        public ConfigurationOptions WithExpiration([NotNull]TimeSpan expiration)
+        public ConfigurationOptions IgnoreCaching()
         {
-            if (expiration == TimeSpan.MinValue)
-                throw new ArgumentNullException(nameof(expiration));
-
-            DefaultExpiration = expiration;
+            IsIgnoreCaching = true;
             return this;
         }
 
@@ -59,9 +51,11 @@ namespace HBD.Services.Configuration
                 case ".json":
                     Adapters.Add(new JsonConfigAdapter<TConfig>(filePath));
                     break;
+
                 case ".xml":
                     Adapters.Add(new XmlConfigAdapter<TConfig>(filePath));
                     break;
+
                 default: throw new NotSupportedException(filePath);
             }
 
@@ -81,23 +75,47 @@ namespace HBD.Services.Configuration
                 case ".json":
                     Adapters.Add(new JsonConfigAdapter<TConfig>(finder));
                     break;
+
                 case ".xml":
                     Adapters.Add(new XmlConfigAdapter<TConfig>(finder));
                     break;
+
                 default: throw new NotSupportedException(finder.FileName);
             }
 
             return this;
         }
 
-        /// <summary>
-        /// Not using caching mechanism on the ConfigurationManager. 
-        /// </summary>
-        /// <returns></returns>
-        public ConfigurationOptions IgnoreCaching()
+        public ConfigurationOptions WithAdapters(params IConfigAdapter[] configAdapters)
         {
-            IsIgnoreCaching = true;
+            foreach (var item in configAdapters)
+            {
+                if (!Adapters.Contains(item))
+                    Adapters.Add(item);
+            }
             return this;
         }
+
+        /// <summary>
+        /// The expiration should be from Adapters. However if any adapter is not provided the expiration the this one will be used.
+        /// </summary>
+        /// <param name="expiration"></param>
+        /// <returns></returns>
+        public ConfigurationOptions WithExpiration(TimeSpan expiration)
+        {
+            if (expiration == TimeSpan.MinValue)
+                throw new ArgumentNullException(nameof(expiration));
+
+            DefaultExpiration = expiration;
+            return this;
+        }
+
+        public ConfigurationOptions WithMemoryCache(IMemoryCache cacheProvider)
+        {
+            CacheProvider = cacheProvider;
+            return this;
+        }
+
+        #endregion Methods
     }
 }

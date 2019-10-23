@@ -1,48 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using HBD.Services.Transformation.TokenDefinitions;
 using HBD.Services.Transformation.TokenExtractors;
 using HBD.Services.Transformation.TokenResolvers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HBD.Services.Transform.Tests.TokenResolvers
 {
     [TestClass]
     public class TokenResolversTests
     {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Test_TokenResolver_Token_Null()
-        {
-            var resolver = new TokenResolver();
-
-            var val = resolver.Resolve(null, data: new Object[]
-            {
-                null,
-                new { A=(string)null},
-                new { A=123},
-            });
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Test_TokenResolver_Data_Null()
-        {
-            var resolver = new TokenResolver();
-
-            var val = resolver.Resolve(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), null);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Test_TokenResolver_Data_Empty()
-        {
-            var resolver = new TokenResolver();
-
-            var val = resolver.Resolve(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new object[0]);
-        }
+        #region Methods
 
         [TestMethod]
         public void Test_TokenResolver()
@@ -75,6 +45,24 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Test_TokenResolver_Data_Empty()
+        {
+            var resolver = new TokenResolver();
+
+            var val = resolver.Resolve(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new object[0]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Test_TokenResolver_Data_Null()
+        {
+            var resolver = new TokenResolver();
+
+            var val = resolver.Resolve(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), null);
+        }
+
+        [TestMethod]
         public async Task Test_TokenResolver_Dictionary()
         {
             var resolver = new TokenResolver();
@@ -100,5 +88,21 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
 
             val.Should().Be("Duy");
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Test_TokenResolver_Token_Null()
+        {
+            var resolver = new TokenResolver();
+
+            var val = resolver.Resolve(null, data: new Object[]
+            {
+                null,
+                new { A=(string)null},
+                new { A=123},
+            });
+        }
+
+        #endregion Methods
     }
 }

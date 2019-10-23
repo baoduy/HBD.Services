@@ -1,15 +1,13 @@
-﻿#region using
-
-using System.Collections.Generic;
-using HBD.Framework.Collections;
+﻿using HBD.Framework.Collections;
 using HBD.Framework.Core;
-
-#endregion
+using System.Collections.Generic;
 
 namespace HBD.Services.Sql.Base
 {
     public class ColumnInfoCollection : DistinctCollection<string, ColumnInfo>
     {
+        #region Constructors
+
         internal ColumnInfoCollection(TableInfo parentTable) : this(parentTable, null)
         {
         }
@@ -20,7 +18,15 @@ namespace HBD.Services.Sql.Base
             AddRange(collection);
         }
 
+        #endregion Constructors
+
+        #region Properties
+
         private TableInfo ParentTable { get; }
+
+        #endregion Properties
+
+        #region Methods
 
         public new void Add(ColumnInfo item)
         {
@@ -36,5 +42,7 @@ namespace HBD.Services.Sql.Base
             if (collection == null) return;
             foreach (var c in collection) Add(c);
         }
+
+        #endregion Methods
     }
 }

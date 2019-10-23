@@ -1,13 +1,11 @@
-﻿#region using
-
-using System.Collections.Generic;
-
-#endregion
+﻿using System.Collections.Generic;
 
 namespace HBD.Services.Sql.Base
 {
     public class TableInfoCollection : DbInfoCollection<TableInfo>
     {
+        #region Constructors
+
         internal TableInfoCollection(SchemaInfo parentSchema) : base(parentSchema, null)
         {
         }
@@ -16,5 +14,7 @@ namespace HBD.Services.Sql.Base
             : base(parentSchema, collection)
         {
         }
+
+        #endregion Constructors
     }
 }

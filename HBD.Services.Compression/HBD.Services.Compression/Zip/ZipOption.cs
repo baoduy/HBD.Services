@@ -2,12 +2,21 @@
 {
     public abstract class ZipOption
     {
-        protected internal IZipAdapter ZipAdapter { get; set; }
+        #region Properties
+
         protected internal string Password { get; set; }
 
-        protected IZipAdapter GetOrCreateAdapter()
-            => ZipAdapter ?? CreateAdapter();
+        protected internal IZipAdapter ZipAdapter { get; set; }
+
+        #endregion Properties
+
+        #region Methods
 
         protected virtual IZipAdapter CreateAdapter() => new ZipAdapter();
+
+        protected IZipAdapter GetOrCreateAdapter()
+                    => ZipAdapter ?? CreateAdapter();
+
+        #endregion Methods
     }
 }

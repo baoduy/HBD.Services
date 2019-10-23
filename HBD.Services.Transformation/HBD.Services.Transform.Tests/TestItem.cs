@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HBD.Services.Transform.Tests
 {
-    class TestItem
+    internal class TestItem
     {
+        #region Properties
+
         public string Name => "Duy";
+
         private DateTime Birthday => DateTime.Today;
+
+        #endregion Properties
     }
 }

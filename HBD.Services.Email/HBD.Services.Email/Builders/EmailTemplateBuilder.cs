@@ -1,31 +1,38 @@
-﻿using System;
+﻿using HBD.Services.Email.Exceptions;
+using HBD.Services.Email.Templates;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using HBD.Services.Email.Exceptions;
-using HBD.Services.Email.Templates;
 
 namespace HBD.Services.Email.Builders
 {
     public interface IDestinationBuilder
     {
-        IDestinationBuilder To(params string[] emails);
-        IDestinationBuilder Cc(params string[] emails);
+        #region Methods
+
         IDestinationBuilder Bcc(params string[] emails);
 
+        IDestinationBuilder Cc(params string[] emails);
+
+        IDestinationBuilder To(params string[] emails);
+
         IEmailBuilder With();
-    }
 
-    public interface IEmailTemplateBuilder
-    {
-        IDestinationBuilder Add(string name);
-
-        ICollection<IEmailTemplate> Build();
+        #endregion Methods
     }
 
     public interface IEmailBuilder
     {
-        IEmailBuilder Subject(string subject);
+        #region Methods
+
+        /// <summary>
+        /// Add more template
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        IDestinationBuilder Add(string name);
+
         /// <summary>
         /// Non Html body
         /// </summary>
@@ -41,28 +48,46 @@ namespace HBD.Services.Email.Builders
         IEmailBuilder BodyFrom(string file);
 
         /// <summary>
-        /// Add more template
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        IDestinationBuilder Add(string name);
-
-        /// <summary>
         /// Build Templates
         /// </summary>
         /// <returns></returns>
         ICollection<IEmailTemplate> Build();
+
+        IEmailBuilder Subject(string subject);
+
+        #endregion Methods
     }
 
+    public interface IEmailTemplateBuilder
+    {
+        #region Methods
+
+        IDestinationBuilder Add(string name);
+
+        ICollection<IEmailTemplate> Build();
+
+        #endregion Methods
+    }
 
     public class EmailTemplateBuilder : IEmailTemplateBuilder, IDestinationBuilder, IEmailBuilder
     {
-        public static IDestinationBuilder New(string name) => new EmailTemplateBuilder().Add(name);
+        #region Fields
 
-        IDictionary<string, IEmailTemplate> _templates;
-        EmailTemplate _current;
+        private EmailTemplate _current;
+
+        private IDictionary<string, IEmailTemplate> _templates;
+
+        #endregion Fields
+
+        #region Constructors
 
         internal EmailTemplateBuilder(IDictionary<string, IEmailTemplate> container = null) => _templates = container ?? new Dictionary<string, IEmailTemplate>();
+
+        #endregion Constructors
+
+        #region Methods
+
+        public static IDestinationBuilder New(string name) => new EmailTemplateBuilder().Add(name);
 
         public IDestinationBuilder Add(string name)
         {
@@ -72,6 +97,13 @@ namespace HBD.Services.Email.Builders
             _current = new EmailTemplate(name);
             _templates.Add(_current.Name.ToUpper(), _current);
 
+            return this;
+        }
+
+        public IDestinationBuilder Bcc(params string[] emails)
+        {
+            Contract.Requires(emails.Length > 0);
+            _current.BccEmails = string.Join(",", emails);
             return this;
         }
 
@@ -101,6 +133,13 @@ namespace HBD.Services.Email.Builders
             return _templates.Values;
         }
 
+        public IDestinationBuilder Cc(params string[] emails)
+        {
+            Contract.Requires(emails.Length > 0);
+            _current.CcEmails = string.Join(",", emails);
+            return this;
+        }
+
         public IEmailBuilder Subject(string subject)
         {
             if (string.IsNullOrEmpty(subject)) throw new ArgumentNullException(nameof(subject));
@@ -114,23 +153,10 @@ namespace HBD.Services.Email.Builders
             Contract.Requires(emails.Length > 0);
             _current.ToEmails = string.Join(",", emails);
             return this;
-
-        }
-
-        public IDestinationBuilder Cc(params string[] emails)
-        {
-            Contract.Requires(emails.Length > 0);
-            _current.CcEmails = string.Join(",", emails);
-            return this;
-        }
-
-        public IDestinationBuilder Bcc(params string[] emails)
-        {
-            Contract.Requires(emails.Length > 0);
-            _current.BccEmails = string.Join(",", emails);
-            return this;
         }
 
         public IEmailBuilder With() => this;
+
+        #endregion Methods
     }
 }

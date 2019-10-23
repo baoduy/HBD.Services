@@ -12,6 +12,24 @@ namespace HBD.Services.Email.Tests
         #region Methods
 
         [TestMethod]
+        public async Task ConfigTemplateAsync()
+        {
+            var s = new ServiceCollection()
+                .AddEmailService(op =>
+                {
+                    op.FromEmailAddress("system@hbd.com")
+                        .WithSmtp(() => new System.Net.Mail.SmtpClient())
+                        .EmailTemplateFromFile("TestData/Emails.json");
+                })
+                .BuildServiceProvider();
+
+            var p = s.GetService<IEmailTemplateProvider>();
+            p.Should().NotBeNull();
+            p.Should().BeOfType<JsonEmailTemplateProvider>();
+            (await p.GetTemplate("Duy2")).Should().NotBeNull();
+        }
+
+        [TestMethod]
         public async Task TestJsonProvider()
         {
             using (var p = new JsonEmailTemplateProvider("TestData/Emails.json"))
@@ -36,23 +54,6 @@ namespace HBD.Services.Email.Tests
             }
         }
 
-        [TestMethod]
-        public async Task ConfigTemplateAsync()
-        {
-            var s = new ServiceCollection()
-                .AddEmailService(op =>
-                {
-                    op.From("system@hbd.com")
-                        .WithSmtp(() => new System.Net.Mail.SmtpClient())
-                        .EmailTemplateFromFile("TestData/Emails.json");
-                })
-                .BuildServiceProvider();
-
-            var p = s.GetService<IEmailTemplateProvider>();
-            p.Should().NotBeNull();
-            p.Should().BeOfType<JsonEmailTemplateProvider>();
-            (await p.GetTemplate("Duy2")).Should().NotBeNull();
-        }
         #endregion Methods
     }
 }

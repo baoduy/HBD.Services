@@ -1,5 +1,5 @@
-﻿using System;
-using HBD.Services.Transformation.TokenExtractors;
+﻿using HBD.Services.Transformation.TokenExtractors;
+using System;
 
 namespace HBD.Services.Transformation.Convertors
 {
@@ -8,9 +8,17 @@ namespace HBD.Services.Transformation.Convertors
     /// </summary>
     public class ValueFormatter : IValueFormatter
     {
+        #region Properties
+
         public string DateFormat { get; set; } = "dd/MM/yyyy hh.mm.ss";
-        public string NumberFormat { get; set; } = "###,##0.00";
+
         public string IntegerFormat { get; set; } = "###,##0";
+
+        public string NumberFormat { get; set; } = "###,##0.00";
+
+        #endregion Properties
+
+        #region Methods
 
         public virtual string Convert(IToken token, object value)
         {
@@ -31,5 +39,7 @@ namespace HBD.Services.Transformation.Convertors
 
             return value.ToString();
         }
+
+        #endregion Methods
     }
 }

@@ -1,11 +1,13 @@
-﻿using System.IO;
-using HBD.Framework;
+﻿using HBD.Framework.Extensions;
 using ICSharpCode.SharpZipLib.Zip;
+using System.IO;
 
 namespace HBD.Services.Compression.Zip
 {
     internal static class InternalExtentions
     {
+        #region Methods
+
         public static void AddDirectory(this ZipFile zip, string directory, int folderOffset)
         {
             if (!Directory.Exists(directory))
@@ -31,5 +33,7 @@ namespace HBD.Services.Compression.Zip
             foreach (var d in folders)
                 zip.AddDirectory(d, folderOffset);
         }
+
+        #endregion Methods
     }
 }

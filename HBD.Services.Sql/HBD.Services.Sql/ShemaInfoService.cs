@@ -1,4 +1,7 @@
-﻿using HBD.Services.Sql.Base;
+﻿using HBD.Framework;
+using HBD.Framework.Core;
+using HBD.Services.Sql.Base;
+using HBD.Services.Sql.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,60 +10,49 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using HBD.Framework;
-using HBD.Framework.Core;
-using HBD.Services.Sql.Extensions;
 
 namespace HBD.Services.Sql
 {
-    public class ShemaInfoService:SqlClientAdapter
+    public class ShemaInfoService : SqlClientAdapter
     {
-        
-        #region DataBase Info Methods
-
-        /// <summary>
-        ///     Get available Schema Names in SQL.
-        ///     The names will be cache into CacheManager.Default.
-        /// </summary>
-        /// <returns></returns>
-        public virtual IReadOnlyCollection<DatabaseInfo> GetDataBaseInfos()
-        {
-            var list = new List<DatabaseInfo>();
-            using (var reader = ExecuteReader(QueryAllSchemaNames))
-            {
-                while (reader.Read())
-                    list.Add(new DatabaseInfo(this, reader.GetValue<string>(FieldTableCatalog)));
-            }
-
-            return new ReadOnlyCollection<DatabaseInfo>(list);
-        }
-
-        #endregion DataBase Info Methods
-
         #region Fields
 
-        private const string FieldOrdinalPosition = "Ordinal_Position";
-        private const string FieldTableCatalog = "Table_Catalog";
-        private const string FieldTableName = "Table_Name";
-        private const string FieldTableSchema = "Table_Schema";
-        private const string FieldColumnName = "Column_Name";
-        private const string FieldIsNullable = "Is_Nullable";
-        private const string FieldDataType = "Data_Type";
         private const string FieldCharacterMaximumLength = "Character_Maximum_Length";
-        private const string FieldIsIdentity = "Is_Identity";
-        private const string FieldIsComputed = "Is_Computed";
-        private const string FieldIsPrimaryKey = "Is_Primary_Key";
-        private const string FieldIsPoreignKey = "Is_Foreign_Key";
-        private const string FieldFkTableSchema = "Fk_Table_Schema";
-        private const string FieldFkTableName = "Fk_Table_Name";
+
+        private const string FieldColumnName = "Column_Name";
+
+        private const string FieldDataType = "Data_Type";
+
         private const string FieldFkColumnName = "Fk_Column_Name";
+
+        private const string FieldFkTableName = "Fk_Table_Name";
+
+        private const string FieldFkTableSchema = "Fk_Table_Schema";
+
         private const string FieldForeignKeyName = "Foreign_Key_Name";
-        private const string FieldRowCount = "Row_Count";
+
+        private const string FieldIsComputed = "Is_Computed";
+
+        private const string FieldIsIdentity = "Is_Identity";
+
+        private const string FieldIsNullable = "Is_Nullable";
+
+        private const string FieldIsPoreignKey = "Is_Foreign_Key";
+
+        private const string FieldIsPrimaryKey = "Is_Primary_Key";
+
         private const string FieldIsTable = "Is_Table";
 
-        #endregion Fields
+        private const string FieldOrdinalPosition = "Ordinal_Position";
 
-        #region QueryAllSchemaNames
+        private const string FieldRowCount = "Row_Count";
+
+        private const string FieldTableCatalog = "Table_Catalog";
+
+        private const string FieldTableName = "Table_Name";
+
+        private const string FieldTableSchema = "Table_Schema";
+
         private const string QueryAllSchemaNames = @"SELECT [Name] as [Table_Catalog]
 FROM   Sys.Databases
 WHERE  [Name] NOT IN('master', 'tempdb', 'model', 'msdb');
@@ -146,22 +138,42 @@ FROM      Information_Schema.Columns C
 ) AS Tbcnt ON T.Table_Schema = Tbcnt.Table_Schema
               AND T.Table_Name = Tbcnt.Table_Name
 ORDER BY C.Ordinal_Position;";
-        #endregion QueryAllSchemaNames
 
-        #region ShemaInfo Methods
+        #endregion Fields
 
-        protected virtual string GetMaxPrimaryKeyQuery(IList<ColumnInfo> columns)
+        #region Constructors
+
+        public ShemaInfoService(string nameOrConnectionString) : base(nameOrConnectionString)
         {
-            var builder = new StringBuilder();
-            foreach (var col in columns)
+        }
+
+        public ShemaInfoService(DbConnectionStringBuilder connectionString) : base(connectionString)
+        {
+        }
+
+        public ShemaInfoService(IDbConnection connection) : base(connection)
+        {
+        }
+
+        #endregion Constructors
+
+        #region Methods
+
+        /// <summary>
+        ///     Get available Schema Names in SQL.
+        ///     The names will be cache into CacheManager.Default.
+        /// </summary>
+        /// <returns></returns>
+        public virtual IReadOnlyCollection<DatabaseInfo> GetDataBaseInfos()
+        {
+            var list = new List<DatabaseInfo>();
+            using (var reader = ExecuteReader(QueryAllSchemaNames))
             {
-                if (builder.Length > 0) builder.Append("UNION").Append(Environment.NewLine);
-                builder.AppendFormat(
-                        "SELECT MaxValue = CAST(MAX({0}) as nvarchar), ColumnName='{0}', TableName = '{1}' FROM {1}",
-                        col.Name, col.Table.Name)
-                    .Append(Environment.NewLine);
+                while (reader.Read())
+                    list.Add(new DatabaseInfo(this, reader.GetValue<string>(FieldTableCatalog)));
             }
-            return builder.ToString();
+
+            return new ReadOnlyCollection<DatabaseInfo>(list);
         }
 
         /// <summary>
@@ -173,7 +185,7 @@ ORDER BY C.Ordinal_Position;";
         {
             if (databaseName.IsNullOrEmpty())
             {
-                var cn = (SqlConnectionStringBuilder) ConnectionString;
+                var cn = (SqlConnectionStringBuilder)ConnectionString;
                 databaseName = cn.InitialCatalog;
                 if (databaseName.IsNullOrEmpty())
                     databaseName = cn.AttachDBFilename;
@@ -221,7 +233,7 @@ ORDER BY C.Ordinal_Position;";
 
                         if (table == null)
                         {
-                            table = new TableInfo(tbName) {RowCount = rowCount};
+                            table = new TableInfo(tbName) { RowCount = rowCount };
                             schema.Tables.Add(table);
                         }
 
@@ -272,6 +284,20 @@ ORDER BY C.Ordinal_Position;";
             return schema;
         }
 
+        protected virtual string GetMaxPrimaryKeyQuery(IList<ColumnInfo> columns)
+        {
+            var builder = new StringBuilder();
+            foreach (var col in columns)
+            {
+                if (builder.Length > 0) builder.Append("UNION").Append(Environment.NewLine);
+                builder.AppendFormat(
+                        "SELECT MaxValue = CAST(MAX({0}) as nvarchar), ColumnName='{0}', TableName = '{1}' FROM {1}",
+                        col.Name, col.Table.Name)
+                    .Append(Environment.NewLine);
+            }
+            return builder.ToString();
+        }
+
         /// <summary>
         ///     Get Max Primary Key for all Tables in Schema. Which the Primary key is not IsIdentity.
         /// </summary>
@@ -280,9 +306,9 @@ ORDER BY C.Ordinal_Position;";
         protected virtual SchemaInfo GetMaxPrimaryKeyValues(SchemaInfo schema)
         {
             var columns = (from tb in schema.Tables
-                from col in tb.Columns
-                where col.IsPrimaryKey && !col.IsIdentity
-                select col).ToList();
+                           from col in tb.Columns
+                           where col.IsPrimaryKey && !col.IsIdentity
+                           select col).ToList();
 
             if (columns.Count == 0) return schema;
 
@@ -302,18 +328,6 @@ ORDER BY C.Ordinal_Position;";
             return schema;
         }
 
-        #endregion ShemaInfo Methods
-
-        public ShemaInfoService(string nameOrConnectionString) : base(nameOrConnectionString)
-        {
-        }
-
-        public ShemaInfoService(DbConnectionStringBuilder connectionString) : base(connectionString)
-        {
-        }
-
-        public ShemaInfoService(IDbConnection connection) : base(connection)
-        {
-        }
+        #endregion Methods
     }
 }

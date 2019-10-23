@@ -1,10 +1,10 @@
-﻿using System;
-using System.Net;
-using HBD.Services.Email;
+﻿using HBD.Services.Email;
 using HBD.Services.Email.Providers;
 using HBD.Services.Email.Templates;
 using HBD.Services.Transformation;
 using Microsoft.Extensions.Options;
+using System;
+using System.Net;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,40 +24,30 @@ namespace Microsoft.Extensions.DependencyInjection
                     SmtpClientFactory = op.SmtpClientFactory
                 });
 
-            if (op.SmtpClientFromConfig)
-                services.AddSingleton(p =>
-                {
-                    var config = p.GetRequiredService<IOptions<EmailTemplateSection>>().Value;
+            if (op.ConfigSection != null)
+            {
+                services.Configure<EmailTemplateSection>(op.ConfigSection);
 
-                    return new SmtpEmailOptions
+                if (op.SmtpClientFactory == null)
+                    services.AddSingleton(p =>
                     {
-                        FromEmailAddress = string.IsNullOrWhiteSpace(config.FromEmail) ? null : new System.Net.Mail.MailAddress(config.FromEmail),
-                        SmtpClientFactory = () => new System.Net.Mail.SmtpClient(config.Host, config.Port)
+                        var config = p.GetRequiredService<IOptions<EmailTemplateSection>>().Value;
+
+                        return new SmtpEmailOptions
                         {
-                            Credentials = string.IsNullOrWhiteSpace(config.UserName) ? null : new NetworkCredential(config.UserName, config.Password),
-                            EnableSsl = config.EnableSsl
-                        }
-                    };
-                });
+                            FromEmailAddress = string.IsNullOrWhiteSpace(config.FromEmail) ? null : new System.Net.Mail.MailAddress(config.FromEmail),
+                            SmtpClientFactory = () => new System.Net.Mail.SmtpClient(config.Host, config.Port)
+                            {
+                                Credentials = string.IsNullOrWhiteSpace(config.UserName) ? null : new NetworkCredential(config.UserName, config.Password),
+                                EnableSsl = config.EnableSsl
+                            }
+                        };
+                    });
+            }
 
             return services.AddSingleton(op)
                 .AddTemplateProvider(op)
                 .AddEmailServiceOnly();
-        }
-
-
-        private static IServiceCollection AddTemplateProvider(this IServiceCollection services, EmailSetupOptions options)
-        {
-            if (options.TemplateBuilder != null)
-                services.AddSingleton<IEmailTemplateProvider>(new InlineEmailTemplateProvider(options.TemplateBuilder));
-
-            if (!string.IsNullOrWhiteSpace(options.JsonFile))
-                services.AddSingleton<IEmailTemplateProvider>(new JsonEmailTemplateProvider(options.JsonFile));
-
-            if (options.SectionName)
-                services.AddSingleton<IEmailTemplateProvider, AppSettingTemplateProvider>();
-
-            return services;
         }
 
         private static IServiceCollection AddEmailServiceOnly(this IServiceCollection services)
@@ -70,6 +60,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
                             return new SmtpEmailService(mail, options);
                         });
+
+        private static IServiceCollection AddTemplateProvider(this IServiceCollection services, EmailSetupOptions options)
+        {
+            if (options.TemplateBuilder != null)
+                services.AddSingleton<IEmailTemplateProvider>(new InlineEmailTemplateProvider(options.TemplateBuilder));
+
+            if (!string.IsNullOrWhiteSpace(options.JsonFile))
+                services.AddSingleton<IEmailTemplateProvider>(new JsonEmailTemplateProvider(options.JsonFile));
+
+            if (options.ConfigSection != null)
+                services.AddSingleton<IEmailTemplateProvider, AppSettingTemplateProvider>();
+
+            return services;
+        }
 
         #endregion Methods
     }

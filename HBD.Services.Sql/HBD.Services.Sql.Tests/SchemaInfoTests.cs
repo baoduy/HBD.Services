@@ -1,18 +1,107 @@
-﻿#region using
-
-using System.Data;
-using System.Linq;
-using HBD.Services.Sql.Base;
+﻿using HBD.Services.Sql.Base;
 using HBD.Services.Sql.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-#endregion
+using System.Data;
+using System.Linq;
 
 namespace HBD.Services.Sql.Tests
 {
     [TestClass]
     public class SchemaInfoTests
     {
+        #region Methods
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void CreateDataTableTest()
+        {
+            var schema = CreateSchemaInfo();
+            var tb = schema.Tables["Table4"];
+            var data = tb.CreateDataTable();
+
+            Assert.IsNull(((TableInfo)null).CreateDataTable());
+            Assert.IsNotNull(data);
+            Assert.IsTrue(data.TableName == "[dbo].[Table4]");
+            Assert.IsTrue(data.Columns.Count == tb.Columns.Count);
+            Assert.IsTrue(data.PrimaryKey.Length == tb.Columns.Count(c => c.IsPrimaryKey));
+            Assert.IsTrue(data.PrimaryKey[0].ColumnName == tb.Columns.First(c => c.IsPrimaryKey).Name);
+            Assert.IsTrue(data.PrimaryKey[0].DataType == typeof(int));
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void DependenceIndexTest()
+        {
+            var schema = CreateSchemaInfo();
+
+            Assert.IsTrue(schema.Name == "TEST");
+            Assert.IsTrue(schema.Tables.Count == 5);
+            Assert.IsTrue(schema.Tables[0]?.Name == "Table1");
+            Assert.IsTrue(schema.Tables[1]?.Name == "Table5");
+            Assert.IsTrue(schema.Tables[2]?.Name == "Table3");
+            Assert.IsTrue(schema.Tables[3]?.Name == "Table4");
+            Assert.IsTrue(schema.Tables[4]?.Name == "Table2");
+
+            Assert.IsTrue(schema.Tables["Table1"]?.Name == "Table1");
+            Assert.IsTrue(schema.Tables["Table5"]?.Name == "Table5");
+            Assert.IsTrue(schema.Tables["Table3"]?.Name == "Table3");
+            Assert.IsTrue(schema.Tables["Table4"]?.Name == "Table4");
+            Assert.IsTrue(schema.Tables["Table2"]?.Name == "Table2");
+
+            Assert.IsTrue(schema.Tables["Table1"].ForeignKeys.Count == 0);
+            Assert.IsTrue(schema.Tables["Table2"].ForeignKeys.Count == 1);
+            Assert.IsTrue(schema.Tables["Table3"].ForeignKeys.Count == 1);
+            Assert.IsTrue(schema.Tables["Table4"].ForeignKeys.Count == 2);
+            Assert.IsTrue(schema.Tables["Table5"].ForeignKeys.Count == 1);
+
+            var depenOnTb1 = schema.Tables["Table1"].DependenceTables;
+            Assert.IsTrue(depenOnTb1.Count == 1);
+            Assert.IsTrue(depenOnTb1[0].Name == "Table2");
+
+            var depenOnTb2 = schema.Tables["Table2"].DependenceTables;
+            Assert.IsTrue(depenOnTb2.Count == 2);
+            Assert.IsTrue(depenOnTb2[0].Name == "Table3");
+            Assert.IsTrue(depenOnTb2[1].Name == "Table4");
+
+            //Check DependenceIndex
+            Assert.IsTrue(schema.Tables["Table2"].DependenceIndex > schema.Tables["Table1"].DependenceIndex);
+            Assert.IsTrue(schema.Tables["Table3"].DependenceIndex > schema.Tables["Table2"].DependenceIndex);
+            Assert.IsTrue(schema.Tables["Table4"].DependenceIndex > schema.Tables["Table2"].DependenceIndex
+                          && schema.Tables["Table4"].DependenceIndex > schema.Tables["Table3"].DependenceIndex);
+
+            Assert.IsTrue(schema.Tables["Table5"].DependenceIndex > schema.Tables["Table2"].DependenceIndex);
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void SortByDependencesTest1()
+        {
+            var list = CreateSchemaInfo().Tables.SortByDependences();
+
+            Assert.IsTrue(list[0].Name == "Table1");
+            Assert.IsTrue(list[1].Name == "Table2");
+            Assert.IsTrue(list[2].Name == "Table3");
+
+            //Table4 and Table5 are the same DependenceIndex.
+            Assert.IsTrue(list[3].Name == "Table4" || list[3].Name == "Table5");
+            Assert.IsTrue(list[4].Name == "Table4" || list[4].Name == "Table5");
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void SortByDependencesTest2()
+        {
+            var list = CreateSchemaInfo().Tables.SortByDependences("Table0", "Table4", "Table5", "Table3", "Table1");
+
+            Assert.IsTrue(list[0] == "Table0" || list[0] == "Table1");
+            Assert.IsTrue(list[1] == "Table0" || list[1] == "Table1");
+            Assert.IsTrue(list[2] == "Table3");
+
+            //Table4 and Table5 are the same DependenceIndex.
+            Assert.IsTrue(list[3] == "Table4" || list[3] == "Table5");
+            Assert.IsTrue(list[4] == "Table4" || list[4] == "Table5");
+        }
+
         private SchemaInfo CreateSchemaInfo()
         {
             var schema = new TestSchemaInfo("TEST");
@@ -74,100 +163,21 @@ namespace HBD.Services.Sql.Tests
             return schema;
         }
 
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void DependenceIndexTest()
-        {
-            var schema = CreateSchemaInfo();
+        #endregion Methods
 
-            Assert.IsTrue(schema.Name == "TEST");
-            Assert.IsTrue(schema.Tables.Count == 5);
-            Assert.IsTrue(schema.Tables[0]?.Name == "Table1");
-            Assert.IsTrue(schema.Tables[1]?.Name == "Table5");
-            Assert.IsTrue(schema.Tables[2]?.Name == "Table3");
-            Assert.IsTrue(schema.Tables[3]?.Name == "Table4");
-            Assert.IsTrue(schema.Tables[4]?.Name == "Table2");
-
-            Assert.IsTrue(schema.Tables["Table1"]?.Name == "Table1");
-            Assert.IsTrue(schema.Tables["Table5"]?.Name == "Table5");
-            Assert.IsTrue(schema.Tables["Table3"]?.Name == "Table3");
-            Assert.IsTrue(schema.Tables["Table4"]?.Name == "Table4");
-            Assert.IsTrue(schema.Tables["Table2"]?.Name == "Table2");
-
-            Assert.IsTrue(schema.Tables["Table1"].ForeignKeys.Count == 0);
-            Assert.IsTrue(schema.Tables["Table2"].ForeignKeys.Count == 1);
-            Assert.IsTrue(schema.Tables["Table3"].ForeignKeys.Count == 1);
-            Assert.IsTrue(schema.Tables["Table4"].ForeignKeys.Count == 2);
-            Assert.IsTrue(schema.Tables["Table5"].ForeignKeys.Count == 1);
-
-            var depenOnTb1 = schema.Tables["Table1"].DependenceTables;
-            Assert.IsTrue(depenOnTb1.Count == 1);
-            Assert.IsTrue(depenOnTb1[0].Name == "Table2");
-
-            var depenOnTb2 = schema.Tables["Table2"].DependenceTables;
-            Assert.IsTrue(depenOnTb2.Count == 2);
-            Assert.IsTrue(depenOnTb2[0].Name == "Table3");
-            Assert.IsTrue(depenOnTb2[1].Name == "Table4");
-
-            //Check DependenceIndex
-            Assert.IsTrue(schema.Tables["Table2"].DependenceIndex > schema.Tables["Table1"].DependenceIndex);
-            Assert.IsTrue(schema.Tables["Table3"].DependenceIndex > schema.Tables["Table2"].DependenceIndex);
-            Assert.IsTrue(schema.Tables["Table4"].DependenceIndex > schema.Tables["Table2"].DependenceIndex
-                          && schema.Tables["Table4"].DependenceIndex > schema.Tables["Table3"].DependenceIndex);
-
-            Assert.IsTrue(schema.Tables["Table5"].DependenceIndex > schema.Tables["Table2"].DependenceIndex);
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void SortByDependencesTest1()
-        {
-            var list = CreateSchemaInfo().Tables.SortByDependences();
-
-            Assert.IsTrue(list[0].Name == "Table1");
-            Assert.IsTrue(list[1].Name == "Table2");
-            Assert.IsTrue(list[2].Name == "Table3");
-            //Table4 and Table5 are the same DependenceIndex.
-            Assert.IsTrue(list[3].Name == "Table4" || list[3].Name == "Table5");
-            Assert.IsTrue(list[4].Name == "Table4" || list[4].Name == "Table5");
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void SortByDependencesTest2()
-        {
-            var list = CreateSchemaInfo().Tables.SortByDependences("Table0", "Table4", "Table5", "Table3", "Table1");
-
-            Assert.IsTrue(list[0] == "Table0" || list[0] == "Table1");
-            Assert.IsTrue(list[1] == "Table0" || list[1] == "Table1");
-            Assert.IsTrue(list[2] == "Table3");
-            //Table4 and Table5 are the same DependenceIndex.
-            Assert.IsTrue(list[3] == "Table4" || list[3] == "Table5");
-            Assert.IsTrue(list[4] == "Table4" || list[4] == "Table5");
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void CreateDataTableTest()
-        {
-            var schema = CreateSchemaInfo();
-            var tb = schema.Tables["Table4"];
-            var data = tb.CreateDataTable();
-
-            Assert.IsNull(((TableInfo) null).CreateDataTable());
-            Assert.IsNotNull(data);
-            Assert.IsTrue(data.TableName == "[dbo].[Table4]");
-            Assert.IsTrue(data.Columns.Count == tb.Columns.Count);
-            Assert.IsTrue(data.PrimaryKey.Length == tb.Columns.Count(c => c.IsPrimaryKey));
-            Assert.IsTrue(data.PrimaryKey[0].ColumnName == tb.Columns.First(c => c.IsPrimaryKey).Name);
-            Assert.IsTrue(data.PrimaryKey[0].DataType == typeof(int));
-        }
+        #region Classes
 
         private class TestSchemaInfo : SchemaInfo
         {
+            #region Constructors
+
             public TestSchemaInfo(string name) : base(name)
             {
             }
+
+            #endregion Constructors
         }
+
+        #endregion Classes
     }
 }

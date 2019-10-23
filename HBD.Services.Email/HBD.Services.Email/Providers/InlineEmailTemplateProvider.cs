@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
-using HBD.Services.Email.Builders;
+﻿using HBD.Services.Email.Builders;
 using HBD.Services.Email.Templates;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HBD.Services.Email.Providers
 {
     public class InlineEmailTemplateProvider : IEmailTemplateProvider
     {
-        IDictionary<string, IEmailTemplate> _templates;
+        #region Fields
+
+        private IDictionary<string, IEmailTemplate> _templates;
+
+        #endregion Fields
+
+        #region Constructors
 
         public InlineEmailTemplateProvider(Action<IEmailTemplateBuilder> actions)
         {
@@ -19,12 +24,18 @@ namespace HBD.Services.Email.Providers
             _templates = new Dictionary<string, IEmailTemplate>();
             var builder = new EmailTemplateBuilder(_templates);
             actions.Invoke(builder);
+
             //Validate Templates
             builder.Build();
-
         }
 
-        public void Dispose() { }
+        #endregion Constructors
+
+        #region Methods
+
+        public void Dispose()
+        {
+        }
 
         public Task<IEmailTemplate> GetTemplate(string templateName)
         {
@@ -35,5 +46,7 @@ namespace HBD.Services.Email.Providers
 
             return Task.FromResult<IEmailTemplate>(null);
         }
+
+        #endregion Methods
     }
 }

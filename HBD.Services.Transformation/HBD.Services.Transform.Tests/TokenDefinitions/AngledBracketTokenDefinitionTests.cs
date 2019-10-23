@@ -7,6 +7,8 @@ namespace HBD.Services.Transform.Tests.TokenDefinitions
     [TestClass]
     public class AngledBracketTokenDefinitionTests
     {
+        #region Methods
+
         [TestMethod]
         public void AngledBracketTokenDefinitionTest()
         {
@@ -24,5 +26,7 @@ namespace HBD.Services.Transform.Tests.TokenDefinitions
             t.IsToken("Duy>")
                 .Should().BeFalse();
         }
+
+        #endregion Methods
     }
 }

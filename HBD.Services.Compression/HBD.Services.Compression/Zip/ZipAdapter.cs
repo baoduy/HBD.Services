@@ -1,36 +1,22 @@
-﻿using System;
+﻿using HBD.Framework.Extensions;
+using HBD.Framework.IO;
+using ICSharpCode.SharpZipLib.Zip;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HBD.Framework;
-using HBD.Framework.IO;
-using ICSharpCode.SharpZipLib.Zip;
 
 namespace HBD.Services.Compression.Zip
 {
     internal class ZipAdapter : IZipAdapter
     {
+        #region Fields
+
         private const string Ext = ".zip";
 
-        private static void Validation(ZipCompressOption option)
-        {
-            if (!option.Inputs.Any())
-                throw new ArgumentException("The input files cannot be empty.");
-        }
+        #endregion Fields
 
-        private string GetOutputFileName(ZipCompressOption option)
-        {
-            var output = string.Empty;
-
-            if (option.OutputFile.IsNotNullOrEmpty())
-                return Path.GetFullPath(option.OutputFile);
-
-            var f = Path.GetFullPath(option.Inputs.First());
-
-            if (PathEx.IsDirectory(f))
-                return $"{Path.GetDirectoryName(f)}\\{new DirectoryInfo(f).Name}{Ext}";
-            return Path.ChangeExtension(f, Ext);
-        }
+        #region Methods
 
         public string Compress(ZipCompressOption option)
         {
@@ -62,6 +48,7 @@ namespace HBD.Services.Compression.Zip
                         var folderOffset = Path.GetDirectoryName(full).Length + 1;
                         zip.AddDirectory(full, folderOffset);
                     }
+
                     // The "Add()" method will add or overwrite as necessary.
                     // When the optional entryName parameter is omitted, the entry will be named
                     else zip.Add(full, Path.GetFileName(full));
@@ -74,9 +61,6 @@ namespace HBD.Services.Compression.Zip
 
             return outputFile;
         }
-
-        private string GetOutputFolder(ZipExtractOption option)
-            => Path.GetFullPath(option.OutputFolder ?? Path.GetDirectoryName(option.ZipFile));
 
         public IEnumerable<string> Extract(ZipExtractOption option)
         {
@@ -127,5 +111,30 @@ namespace HBD.Services.Compression.Zip
                 }
             }
         }
+
+        private static void Validation(ZipCompressOption option)
+        {
+            if (!option.Inputs.Any())
+                throw new ArgumentException("The input files cannot be empty.");
+        }
+
+        private string GetOutputFileName(ZipCompressOption option)
+        {
+            var output = string.Empty;
+
+            if (option.OutputFile.IsNotNullOrEmpty())
+                return Path.GetFullPath(option.OutputFile);
+
+            var f = Path.GetFullPath(option.Inputs.First());
+
+            if (PathEx.IsDirectory(f))
+                return $"{Path.GetDirectoryName(f)}\\{new DirectoryInfo(f).Name}{Ext}";
+            return Path.ChangeExtension(f, Ext);
+        }
+
+        private string GetOutputFolder(ZipExtractOption option)
+            => Path.GetFullPath(option.OutputFolder ?? Path.GetDirectoryName(option.ZipFile));
+
+        #endregion Methods
     }
 }

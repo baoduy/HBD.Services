@@ -1,18 +1,20 @@
-﻿#region using
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
-#endregion
 
 namespace HBD.Services.Sql.Base
 {
     [DebuggerDisplay("Table Name = {Name}, Columns={Columns.Count}")]
     public class TableInfo : IDbInfo
     {
+        #region Fields
+
         private int _dependenceIndex = -1;
         private IList<TableInfo> _referenceTables;
+
+        #endregion Fields
+
+        #region Constructors
 
         public TableInfo(string tableSchema, string tableName) : this(new DbName(tableSchema, tableName))
         {
@@ -24,10 +26,11 @@ namespace HBD.Services.Sql.Base
             Columns = new ColumnInfoCollection(this);
         }
 
-        public ColumnInfoCollection Columns { get; }
-        public long RowCount { get; set; }
+        #endregion Constructors
 
-        public IList<ForeignKeyInfo> ForeignKeys { get; set; } = new List<ForeignKeyInfo>();
+        #region Properties
+
+        public ColumnInfoCollection Columns { get; }
 
         /// <summary>
         ///     This is the index of table which has dependency to the other table.
@@ -51,17 +54,6 @@ namespace HBD.Services.Sql.Base
         }
 
         /// <summary>
-        ///     Get all reference tables of this table.
-        ///     Table A is reference table of B once B has a foreign key to A.
-        ///     Self-Reference will be excluded.
-        /// </summary>
-        public IList<TableInfo> ReferenceTables => _referenceTables ??
-                                                   (_referenceTables = (from f in ForeignKeys
-                                                       where f.ReferencedColumn.ReferencedTable != Name
-                                                       select Schema.Tables[f.ReferencedColumn.ReferencedTable]
-                                                   ).ToList());
-
-        /// <summary>
         ///     Get all name of dependence tables of this table.
         ///     Table B is dependent on A once B has a foreign key to A.
         ///     Self-Reference will be excluded.
@@ -69,9 +61,31 @@ namespace HBD.Services.Sql.Base
         public IList<TableInfo> DependenceTables
             => Schema.Tables.Where(t => t.ReferenceTables.Contains(this)).ToList();
 
+        public IList<ForeignKeyInfo> ForeignKeys { get; set; } = new List<ForeignKeyInfo>();
+
         public DbName Name { get; }
+
+        /// <summary>
+        ///     Get all reference tables of this table.
+        ///     Table A is reference table of B once B has a foreign key to A.
+        ///     Self-Reference will be excluded.
+        /// </summary>
+        public IList<TableInfo> ReferenceTables => _referenceTables ??
+                                                   (_referenceTables = (from f in ForeignKeys
+                                                                        where f.ReferencedColumn.ReferencedTable != Name
+                                                                        select Schema.Tables[f.ReferencedColumn.ReferencedTable]
+                                                   ).ToList());
+
+        public long RowCount { get; set; }
+
         public SchemaInfo Schema { get; set; }
 
+        #endregion Properties
+
+        #region Methods
+
         public override string ToString() => Name;
+
+        #endregion Methods
     }
 }

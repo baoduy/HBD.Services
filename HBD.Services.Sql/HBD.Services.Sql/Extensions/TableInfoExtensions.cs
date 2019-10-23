@@ -1,24 +1,20 @@
-﻿#region using
-
+﻿using HBD.Framework;
+using HBD.Framework.Exceptions;
+using HBD.Services.Sql.Base;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using HBD.Framework;
-using HBD.Framework.Exceptions;
-using HBD.Services.Sql.Base;
-
-#endregion
 
 namespace HBD.Services.Sql.Extensions
 {
     public static class TableInfoExtensions
     {
-        #region TableInfo
+        #region Methods
 
         public static DataTable CreateDataTable(this TableInfo @this)
         {
             if (@this == null) return null;
-            var data = new DataTable {TableName = @this.Name.FullName};
+            var data = new DataTable { TableName = @this.Name.FullName };
 
             foreach (var col in @this.Columns.OrderBy(c => c.OrdinalPosition))
             {
@@ -34,19 +30,19 @@ namespace HBD.Services.Sql.Extensions
 
                 if (!col.IsPrimaryKey) continue;
 
-                var list = new List<DataColumn>(data.PrimaryKey) {c};
+                var list = new List<DataColumn>(data.PrimaryKey) { c };
                 data.PrimaryKey = list.ToArray();
             }
 
             return data;
         }
 
-        #endregion TableInfo
-
-        #region TableInfo Collection
+        public static IEnumerable<TableInfo> GetTableInfoByName(this TableInfoCollection @this,
+            params string[] tableNames)
+            => @this.Where(t => tableNames.Any(s => s == t.Name));
 
         public static IList<TableInfo> SortByDependences(this TableInfoCollection @this)
-            => @this.OrderBy(t => t.DependenceIndex).ToList();
+                    => @this.OrderBy(t => t.DependenceIndex).ToList();
 
         /// <summary>
         ///     Sort the input table by DependenceIndex
@@ -57,10 +53,6 @@ namespace HBD.Services.Sql.Extensions
         public static string[] SortByDependences(this TableInfoCollection @this, params string[] tableNames)
             => tableNames.OrderBy(t => @this[t]?.DependenceIndex ?? 0).ToArray();
 
-        public static IEnumerable<TableInfo> GetTableInfoByName(this TableInfoCollection @this,
-            params string[] tableNames)
-            => @this.Where(t => tableNames.Any(s => s == t.Name));
-
-        #endregion TableInfo Collection
+        #endregion Methods
     }
 }

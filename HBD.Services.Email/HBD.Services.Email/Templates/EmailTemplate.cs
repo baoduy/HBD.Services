@@ -5,11 +5,18 @@ namespace HBD.Services.Email.Templates
 {
     public class EmailTemplate : IEmailTemplate
     {
-        #region Properties
-        public EmailTemplate() { }
+        #region Constructors
+
+        public EmailTemplate()
+        {
+        }
 
         [JsonConstructor]
         public EmailTemplate([JsonProperty(nameof(Name))]string name) => Name = name;
+
+        #endregion Constructors
+
+        #region Properties
 
         /// <inheritdoc />
         public string BccEmails { get; set; }

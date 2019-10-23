@@ -2,7 +2,12 @@
 {
     public class TestItem
     {
-        public string Name { get; set; }
+        #region Properties
+
         public string Email { get; set; }
+
+        public string Name { get; set; }
+
+        #endregion Properties
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using HBD.Services.Configuration.Adapters;
-using System.Threading.Tasks;
+﻿using HBD.Services.Configuration.Adapters;
 using HBD.Services.Configuration.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HBD.Services.Configuration
 {
@@ -11,10 +11,16 @@ namespace HBD.Services.Configuration
     /// </summary>
     public interface IConfigurationService : IDisposable
     {
+        #region Properties
+
         /// <summary>
         /// The registered Adapters
         /// </summary>
         IReadOnlyCollection<IConfigAdapter> Adapters { get; }
+
+        #endregion Properties
+
+        #region Methods
 
         /// <summary>
         /// Load the TConfig from adapters.
@@ -26,5 +32,7 @@ namespace HBD.Services.Configuration
         /// <returns></returns>
         /// <exception cref="AdapterNotFoundException"> If there is no adapter found for TConfig. The AdapterNotFoundException will be thrown.</exception>
         Task<TConfig> GetAsync<TConfig>() where TConfig : class;
+
+        #endregion Methods
     }
 }

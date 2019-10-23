@@ -1,13 +1,11 @@
-﻿#region using
-
-using System.Collections.Generic;
-
-#endregion
+﻿using System.Collections.Generic;
 
 namespace HBD.Services.Sql.Base
 {
     public class ViewInfoCollection : DbInfoCollection<ViewInfo>
     {
+        #region Constructors
+
         internal ViewInfoCollection(SchemaInfo parentSchema) : base(parentSchema, null)
         {
         }
@@ -16,5 +14,7 @@ namespace HBD.Services.Sql.Base
             : base(parentSchema, collection)
         {
         }
+
+        #endregion Constructors
     }
 }

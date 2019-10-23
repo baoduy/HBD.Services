@@ -5,6 +5,8 @@ namespace HBD.Services.Transformation.TokenExtractors
 {
     public interface ITokenExtractor
     {
+        #region Methods
+
         /// <summary>
         /// Extract token from string.
         /// </summary>
@@ -18,5 +20,7 @@ namespace HBD.Services.Transformation.TokenExtractors
         /// <param name="template"></param>
         /// <returns></returns>
         Task<IEnumerable<IToken>> ExtractAsync(string template);
+
+        #endregion Methods
     }
 }

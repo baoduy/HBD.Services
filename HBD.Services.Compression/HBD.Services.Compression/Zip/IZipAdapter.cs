@@ -1,10 +1,11 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace HBD.Services.Compression.Zip
 {
     public interface IZipAdapter
     {
+        #region Methods
+
         /// <summary>
         /// Compress files.
         /// </summary>
@@ -18,5 +19,7 @@ namespace HBD.Services.Compression.Zip
         /// <param name="option"></param>
         /// <returns>The extracted files.</returns>
         IEnumerable<string> Extract(ZipExtractOption option);
+
+        #endregion Methods
     }
 }

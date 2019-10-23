@@ -1,15 +1,13 @@
-﻿#region using
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-
-#endregion
 
 namespace HBD.Services.Sql.Base
 {
     [DebuggerDisplay("Table Name = {Name}, Columns={Columns.Count}")]
     public class ViewInfo : IDbInfo
     {
+        #region Constructors
+
         public ViewInfo(string schema, string name) : this(new DbName(schema, name))
         {
         }
@@ -19,11 +17,22 @@ namespace HBD.Services.Sql.Base
             Name = name;
         }
 
+        #endregion Constructors
+
+        #region Properties
+
         public IList<string> Columns { get; } = new List<string>();
 
         public DbName Name { get; }
+
         public SchemaInfo Schema { get; set; }
 
+        #endregion Properties
+
+        #region Methods
+
         public override string ToString() => Name;
+
+        #endregion Methods
     }
 }

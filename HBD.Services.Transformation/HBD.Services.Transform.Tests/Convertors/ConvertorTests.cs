@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentAssertions;
+﻿using FluentAssertions;
 using HBD.Services.Transformation.Convertors;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace HBD.Services.Transform.Tests.Convertors
 {
     [TestClass]
-   public class ConvertorTests
+    public class ConvertorTests
     {
+        #region Methods
+
         [TestMethod]
         public void Convertor_Tests()
         {
@@ -17,13 +17,15 @@ namespace HBD.Services.Transform.Tests.Convertors
 
             c.Convert(null, null).Should().Be("");
             c.Convert(null, 123456).Should().Be("123,456");
-            c.Convert(null,1234.56m).Should().Be("1,234.56");
-            c.Convert(null,DateTime.Now).Should().Contain(DateTime.Now.ToString("dd/MM/yyyy"));
-            c.Convert(null,DateTimeOffset.Now).Should().Contain(DateTime.Now.ToString("dd/MM/yyyy"));
-            c.Convert(null,true).Should().Be("Yes");
-            c.Convert(null,123456l).Should().Be("123,456");
-            c.Convert(null,123456.78d).Should().Be("123,456.78");
-            c.Convert(null,(float)123456.70).Should().Be("123,456.70");
+            c.Convert(null, 1234.56m).Should().Be("1,234.56");
+            c.Convert(null, DateTime.Now).Should().Contain(DateTime.Now.ToString("dd/MM/yyyy"));
+            c.Convert(null, DateTimeOffset.Now).Should().Contain(DateTime.Now.ToString("dd/MM/yyyy"));
+            c.Convert(null, true).Should().Be("Yes");
+            c.Convert(null, 123456l).Should().Be("123,456");
+            c.Convert(null, 123456.78d).Should().Be("123,456.78");
+            c.Convert(null, (float)123456.70).Should().Be("123,456.70");
         }
+
+        #endregion Methods
     }
 }

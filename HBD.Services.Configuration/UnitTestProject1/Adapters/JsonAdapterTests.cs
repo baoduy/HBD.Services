@@ -10,29 +10,7 @@ namespace HBD.Services.Configuration.StTests.Adapters
     [TestClass]
     public class JsonAdapterTests
     {
-        [TestMethod]
-        public void File_Not_Exists_Exception()
-        {
-            var a = new JsonConfigAdapter<TestItem>("abc.json");
-            Action l = () => a.LoadAsync().GetAwaiter().GetResult();
-            l.Should().Throw<FileNotFoundException>();
-        }
-
-        [TestMethod]
-        public void Before_Load_Is_Changes_Should_Be_True()
-        {
-            var a = new TestJsonConfigAdapter();
-            a.HasChanged().Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task After_Load_Is_Changes_Should_Be_False()
-        {
-            var a = new TestJsonConfigAdapter();
-            var t = await a.LoadAsync();
-            a.HasChanged().Should().BeFalse();
-            t.Should().NotBeNull();
-        }
+        #region Methods
 
         [TestMethod]
         [Ignore]
@@ -53,11 +31,37 @@ namespace HBD.Services.Configuration.StTests.Adapters
         }
 
         [TestMethod]
+        public async Task After_Load_Is_Changes_Should_Be_False()
+        {
+            var a = new TestJsonConfigAdapter();
+            var t = await a.LoadAsync();
+            a.HasChanged().Should().BeFalse();
+            t.Should().NotBeNull();
+        }
+
+        [TestMethod]
+        public void Before_Load_Is_Changes_Should_Be_True()
+        {
+            var a = new TestJsonConfigAdapter();
+            a.HasChanged().Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void File_Not_Exists_Exception()
+        {
+            var a = new JsonConfigAdapter<TestItem>("abc.json");
+            Action l = () => a.LoadAsync().GetAwaiter().GetResult();
+            l.Should().Throw<FileNotFoundException>();
+        }
+
+        [TestMethod]
         public void Not_Supported_Exception()
         {
             var a = new JsonConfigAdapter<TestItem>("TestData\\TextFile1.txt");
             Action t = () => a.LoadAsync().GetAwaiter().GetResult();
             t.Should().Throw<NotSupportedException>();
         }
+
+        #endregion Methods
     }
 }

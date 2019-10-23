@@ -1,16 +1,84 @@
-﻿#region using
-
-using System;
-using HBD.Services.Sql.Base;
+﻿using HBD.Services.Sql.Base;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-#endregion
+using System;
 
 namespace HBD.Services.Sql.Tests
 {
     [TestClass]
     public class TableNameTests
     {
+        #region Methods
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void CompareToTest1()
+        {
+            Assert.IsTrue(DbName.Parse("dbo.TableName") == DbName.Parse("TableName"));
+            Assert.IsTrue(DbName.Parse("[dbo].TableName") == DbName.Parse("[TableName]"));
+            Assert.IsFalse(DbName.Parse("[dbo].TableName1") == DbName.Parse("[TableName]"));
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void CompareToTest2()
+        {
+            Assert.IsFalse(DbName.Parse("dbo.TableName") == null);
+            Assert.IsFalse(DbName.Parse("dbo.TableName") == new DbName("ABC"));
+            Assert.IsFalse(DbName.Parse("dbo.TableName") == string.Empty);
+            Assert.IsFalse(DbName.Parse("[dbo].TableName") != "[TableName]");
+            Assert.IsFalse(DbName.Parse("[dbo].TableName1") == "[TableName]");
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void CompareToTest3()
+        {
+            Assert.IsTrue(DbName.Parse("dbo.TableName") != null);
+            Assert.IsTrue(DbName.Parse("dbo.TableName") != new DbName("ABC"));
+            Assert.IsTrue(DbName.Parse("dbo.TableName") != string.Empty);
+            Assert.IsTrue(DbName.Parse("[dbo].TableName") == "[TableName]");
+            Assert.IsTrue(DbName.Parse("[dbo].TableName1") != "[TableName]");
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void GetHashCodeTest1()
+        {
+            Assert.IsTrue(DbName.Parse("dbo.TableName").GetHashCode() == DbName.Parse("TableName").GetHashCode());
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void ImplicitTest1()
+        {
+            DbName tb = "TableName";
+            Assert.IsTrue(tb.Name == "TableName");
+            Assert.IsTrue(tb.Schema == "dbo");
+
+            string tbName = tb;
+            Assert.IsTrue(tbName == tb.FullName);
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void ImplicitTest2()
+        {
+            DbName tb = "tb.TableName";
+            Assert.IsTrue(tb.Name == "TableName");
+            Assert.IsTrue(tb.Schema == "tb");
+
+            string tbName = tb;
+            Assert.IsTrue(tbName == tb.FullName);
+        }
+
+        [TestMethod]
+        [TestCategory("Fw.Data.Base")]
+        public void TableName_Null_Test6()
+        {
+            Assert.IsNull(DbName.Parse("."));
+            Assert.IsNull(DbName.Parse(""));
+        }
+
         [TestMethod]
         [TestCategory("Fw.Data.Base")]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -84,80 +152,12 @@ namespace HBD.Services.Sql.Tests
 
         [TestMethod]
         [TestCategory("Fw.Data.Base")]
-        public void TableName_Null_Test6()
-        {
-            Assert.IsNull(DbName.Parse("."));
-            Assert.IsNull(DbName.Parse(""));
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
         public void TableNameTest7()
         {
             var tb = new DbName("Table");
             Assert.IsTrue(tb.FullName == "[dbo].[Table]");
         }
 
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void CompareToTest1()
-        {
-            Assert.IsTrue(DbName.Parse("dbo.TableName") == DbName.Parse("TableName"));
-            Assert.IsTrue(DbName.Parse("[dbo].TableName") == DbName.Parse("[TableName]"));
-            Assert.IsFalse(DbName.Parse("[dbo].TableName1") == DbName.Parse("[TableName]"));
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void CompareToTest2()
-        {
-            Assert.IsFalse(DbName.Parse("dbo.TableName") == null);
-            Assert.IsFalse(DbName.Parse("dbo.TableName") == new DbName("ABC"));
-            Assert.IsFalse(DbName.Parse("dbo.TableName") == string.Empty);
-            Assert.IsFalse(DbName.Parse("[dbo].TableName") != "[TableName]");
-            Assert.IsFalse(DbName.Parse("[dbo].TableName1") == "[TableName]");
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void CompareToTest3()
-        {
-            Assert.IsTrue(DbName.Parse("dbo.TableName") != null);
-            Assert.IsTrue(DbName.Parse("dbo.TableName") != new DbName("ABC"));
-            Assert.IsTrue(DbName.Parse("dbo.TableName") != string.Empty);
-            Assert.IsTrue(DbName.Parse("[dbo].TableName") == "[TableName]");
-            Assert.IsTrue(DbName.Parse("[dbo].TableName1") != "[TableName]");
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void GetHashCodeTest1()
-        {
-            Assert.IsTrue(DbName.Parse("dbo.TableName").GetHashCode() == DbName.Parse("TableName").GetHashCode());
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void ImplicitTest1()
-        {
-            DbName tb = "TableName";
-            Assert.IsTrue(tb.Name == "TableName");
-            Assert.IsTrue(tb.Schema == "dbo");
-
-            string tbName = tb;
-            Assert.IsTrue(tbName == tb.FullName);
-        }
-
-        [TestMethod]
-        [TestCategory("Fw.Data.Base")]
-        public void ImplicitTest2()
-        {
-            DbName tb = "tb.TableName";
-            Assert.IsTrue(tb.Name == "TableName");
-            Assert.IsTrue(tb.Schema == "tb");
-
-            string tbName = tb;
-            Assert.IsTrue(tbName == tb.FullName);
-        }
+        #endregion Methods
     }
 }

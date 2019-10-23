@@ -1,13 +1,11 @@
-﻿#region using
-
-using HBD.Framework.Core;
-
-#endregion
+﻿using HBD.Framework.Core;
 
 namespace HBD.Services.Sql.Base
 {
     public class ForeignKeyInfo
     {
+        #region Constructors
+
         public ForeignKeyInfo(string name, ColumnInfo column, ReferencedColumnInfo referencedColumn)
         {
             Guard.ArgumentIsNotNull(referencedColumn, nameof(referencedColumn));
@@ -16,8 +14,16 @@ namespace HBD.Services.Sql.Base
             Name = name;
         }
 
-        public string Name { get; }
+        #endregion Constructors
+
+        #region Properties
+
         public ColumnInfo Column { get; }
+
+        public string Name { get; }
+
         public ReferencedColumnInfo ReferencedColumn { get; }
+
+        #endregion Properties
     }
 }

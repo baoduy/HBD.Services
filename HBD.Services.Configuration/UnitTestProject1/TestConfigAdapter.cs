@@ -1,16 +1,24 @@
-﻿using System;
+﻿using HBD.Services.Configuration.Adapters;
+using System;
 using System.Threading.Tasks;
-using HBD.Services.Configuration.Adapters;
 
 namespace HBD.Services.Configuration.StTests
 {
-    class TestConfigAdapter : IConfigAdapter<TestItem>
+    internal class TestConfigAdapter : IConfigAdapter<TestItem>
     {
-        public int IsChangedCalled { get; private set; }
-        public int LoadCalled { get; private set; }
+        #region Properties
+
         public TimeSpan? Expiration { get; } = new TimeSpan(0, 0, 2);
 
         public bool IsChanged { get; set; }
+
+        public int IsChangedCalled { get; private set; }
+
+        public int LoadCalled { get; private set; }
+
+        #endregion Properties
+
+        #region Methods
 
         public bool HasChanged()
         {
@@ -21,8 +29,10 @@ namespace HBD.Services.Configuration.StTests
         public Task<TestItem> LoadAsync()
             => Task.Run(() =>
                 {
-                      LoadCalled++;
-                      return new TestItem{Email = "drunkcoding@outlook.com", Name = "Duy"};
+                    LoadCalled++;
+                    return new TestItem { Email = "drunkcoding@outlook.com", Name = "Duy" };
                 });
+
+        #endregion Methods
     }
 }

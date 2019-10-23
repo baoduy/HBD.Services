@@ -8,6 +8,8 @@ namespace HBD.Services.Transformation.Exceptions
         //{
         //}
 
+        #region Constructors
+
         public InvalidTokenException(string token) : this(token, null)
         {
         }
@@ -15,5 +17,7 @@ namespace HBD.Services.Transformation.Exceptions
         public InvalidTokenException(string token, Exception innerException) : base(token, innerException)
         {
         }
+
+        #endregion Constructors
     }
 }

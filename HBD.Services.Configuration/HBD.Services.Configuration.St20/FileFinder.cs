@@ -1,6 +1,4 @@
-﻿using HBD.Framework;
-using HBD.Framework.Attributes;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 
@@ -12,19 +10,46 @@ namespace HBD.Services.Configuration
     /// </summary>
     public class FileFinder
     {
+        #region Fields
+
+        private string _inDirectory;
+
+        #endregion Fields
+
+        #region Properties
+
+        internal string FileName { get; private set; }
+
+        #endregion Properties
+
+        #region Methods
+
+        /// <summary>
+        /// File name only no need to provide the full location.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public FileFinder Find(string fileName)
+        {
+            FileName = fileName;
+            return this;
+        }
+
+        public FileFinder In(string directory)
+        {
+            _inDirectory = directory;
+            return this;
+        }
+
         /// <summary>
         /// Find the find folder.
         /// </summary>
         /// <returns></returns>
         protected internal virtual string Find()
         {
-            if (_inDirectory.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(_inDirectory))
             {
-#if NETSTANDARD1_6
-                 _inDirectory = AppContext.BaseDirectory;
-#else
                 _inDirectory = AppDomain.CurrentDomain.BaseDirectory;
-#endif
             }
 
             if (!Directory.Exists(_inDirectory))
@@ -38,24 +63,6 @@ namespace HBD.Services.Configuration
             return file;
         }
 
-        internal string FileName { get; private set; }
-        private string _inDirectory;
-
-        /// <summary>
-        /// File name only no need to provide the full location.
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public FileFinder Find([NotNull]string fileName)
-        {
-            FileName = fileName;
-            return this;
-        }
-
-        public FileFinder In([NotNull]string directory)
-        {
-            _inDirectory = directory;
-            return this;
-        }
+        #endregion Methods
     }
 }

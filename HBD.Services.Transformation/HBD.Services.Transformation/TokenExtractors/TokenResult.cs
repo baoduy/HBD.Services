@@ -1,15 +1,24 @@
-﻿using System;
+﻿using HBD.Services.Transformation.Exceptions;
+using HBD.Services.Transformation.TokenDefinitions;
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using HBD.Services.Transformation.Exceptions;
-using HBD.Services.Transformation.TokenDefinitions;
 
-[assembly:InternalsVisibleTo("HBD.Services.Transform.Tests")]
+[assembly: InternalsVisibleTo("HBD.Services.Transform.Tests")]
+
 namespace HBD.Services.Transformation.TokenExtractors
 {
     [DebuggerDisplay("Token = {" + nameof(Token) + "}")]
     internal sealed class TokenResult : IToken
     {
+        #region Fields
+
+        private string _key;
+
+        #endregion Fields
+
+        #region Constructors
+
         /// <summary>
         /// The Token result
         /// </summary>
@@ -31,11 +40,14 @@ namespace HBD.Services.Transformation.TokenExtractors
                 throw new ArgumentOutOfRangeException(nameof(index));
         }
 
+        #endregion Constructors
+
+        #region Properties
+
         public ITokenDefinition Definition { get; }
-        public string Token { get; }
+
         public int Index { get; }
 
-        private string _key;
         public string Key
         {
             get
@@ -47,5 +59,9 @@ namespace HBD.Services.Transformation.TokenExtractors
         }
 
         public string OriginalString { get; }
+
+        public string Token { get; }
+
+        #endregion Properties
     }
 }

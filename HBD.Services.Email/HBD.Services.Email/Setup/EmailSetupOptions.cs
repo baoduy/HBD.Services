@@ -1,40 +1,34 @@
-﻿using System;
+﻿using HBD.Services.Email.Builders;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Diagnostics.Contracts;
 using System.Net.Mail;
-using HBD.Services.Email.Builders;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public class EmailSetupOptions
     {
+        #region Properties
+
         internal string FromEmail { get; private set; }
-        internal Func<SmtpClient> SmtpClientFactory { get; private set; }
-        internal bool SmtpClientFromConfig { get; private set; }
+
         internal string JsonFile { get; private set; }
-        internal bool SectionName { get; private set; }
+
+        internal IConfigurationSection ConfigSection { get; private set; }
+
+        internal Func<SmtpClient> SmtpClientFactory { get; private set; }
+
         internal Action<IEmailTemplateBuilder> TemplateBuilder { get; private set; }
 
-        public EmailSetupOptions From(string email)
+        #endregion Properties
+
+        #region Methods
+
+        public EmailSetupOptions EmailTemplateFrom(Action<IEmailTemplateBuilder> builder)
         {
-            Contract.Requires(string.IsNullOrEmpty(email) == false);
+            Contract.Requires(builder != null);
 
-            FromEmail = email;
-            return this;
-        }
-
-        public EmailSetupOptions WithSmtp(Func<SmtpClient> smtpClientFactory)
-        {
-            Contract.Requires(smtpClientFactory != null);
-
-            SmtpClientFromConfig = false;
-            SmtpClientFactory = smtpClientFactory;
-            return this;
-        }
-
-        public EmailSetupOptions WithSmtpFromConfiguration()
-        {
-            SmtpClientFactory = null;
-            SmtpClientFromConfig = true;
+            TemplateBuilder = builder;
             return this;
         }
 
@@ -46,24 +40,33 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
+        public EmailSetupOptions FromEmailAddress(string email)
+        {
+            Contract.Requires(string.IsNullOrEmpty(email) == false);
+
+            FromEmail = email;
+            return this;
+        }
+
+        public EmailSetupOptions WithSmtp(Func<SmtpClient> smtpClientFactory)
+        {
+            Contract.Requires(smtpClientFactory != null);
+
+            SmtpClientFactory = smtpClientFactory;
+            return this;
+        }
+
         /// <summary>
-        /// Load Email Templates from appSetting.json section.
+        /// The Configuration need to be provided both SmtpClient and Templates info.
         /// </summary>
         /// <returns></returns>
-        public EmailSetupOptions EmailTemplateFromConfiguration()
+        public EmailSetupOptions FromConfiguration(IConfigurationSection section)
         {
-            SectionName = true;
-            if (SmtpClientFactory == null)
-                SmtpClientFromConfig = true;
+            SmtpClientFactory = null;
+            ConfigSection = section;
             return this;
         }
 
-        public EmailSetupOptions EmailTemplateFrom(Action<IEmailTemplateBuilder> builder)
-        {
-            Contract.Requires(builder != null);
-
-            TemplateBuilder = builder;
-            return this;
-        }
+        #endregion Methods
     }
 }

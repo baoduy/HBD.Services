@@ -1,18 +1,76 @@
-﻿using System;
+﻿using HBD.Services.Transformation.TokenDefinitions;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HBD.Services.Transformation.TokenDefinitions;
 
 namespace HBD.Services.Transformation.TokenExtractors
 {
+    /// <summary>
+    /// The extractor of <token>
+    /// </summary>
+    public class AngledBracketTokenExtractor : TokenExtractor
+    {
+        #region Constructors
+
+        public AngledBracketTokenExtractor() : base(new AngledBracketDefinition())
+        {
+        }
+
+        #endregion Constructors
+    }
+
+    /// <summary>
+    /// The extractor of {token}
+    /// </summary>
+    public class CurlyBracketExtractor : TokenExtractor
+    {
+        #region Constructors
+
+        public CurlyBracketExtractor() : base(new CurlyBracketDefinition())
+        {
+        }
+
+        #endregion Constructors
+    }
+
+    /// <summary>
+    /// The extractor of [token]
+    /// </summary>
+    public class SquareBracketExtractor : TokenExtractor
+    {
+        #region Constructors
+
+        public SquareBracketExtractor() : base(new SquareBracketDefinition())
+        {
+        }
+
+        #endregion Constructors
+    }
+
     public class TokenExtractor : ITokenExtractor
     {
-        protected ITokenDefinition Definition { get; }
+        #region Constructors
 
         public TokenExtractor(ITokenDefinition definition)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
         }
+
+        #endregion Constructors
+
+        #region Properties
+
+        protected ITokenDefinition Definition { get; }
+
+        #endregion Properties
+
+        #region Methods
+
+        public IEnumerable<IToken> Extract(string template)
+            => this.ExtractCore(template);
+
+        public Task<IEnumerable<IToken>> ExtractAsync(string template)
+            => Task.Run(() => this.ExtractCore(template));
 
         protected virtual IEnumerable<IToken> ExtractCore(string template)
         {
@@ -40,40 +98,6 @@ namespace HBD.Services.Transformation.TokenExtractors
             }
         }
 
-        public IEnumerable<IToken> Extract(string template)
-            => this.ExtractCore(template);
-
-        public Task<IEnumerable<IToken>> ExtractAsync(string template) 
-            => Task.Run(() => this.ExtractCore(template));
-    }
-
-    /// <summary>
-    /// The extractor of {token}
-    /// </summary>
-    public class CurlyBracketExtractor : TokenExtractor
-    {
-        public CurlyBracketExtractor() : base(new CurlyBracketDefinition())
-        {
-        }
-    }
-
-    /// <summary>
-    /// The extractor of <token>
-    /// </summary>
-    public class AngledBracketTokenExtractor : TokenExtractor
-    {
-        public AngledBracketTokenExtractor() : base(new AngledBracketDefinition())
-        {
-        }
-    }
-
-    /// <summary>
-    /// The extractor of [token]
-    /// </summary>
-    public class SquareBracketExtractor : TokenExtractor
-    {
-        public SquareBracketExtractor() : base(new SquareBracketDefinition())
-        {
-        }
+        #endregion Methods
     }
 }

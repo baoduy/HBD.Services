@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using HBD.Services.Email.Templates;
+﻿using HBD.Services.Email.Templates;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
 
 namespace HBD.Services.Email.Providers
 {
@@ -10,7 +10,6 @@ namespace HBD.Services.Email.Providers
         #region Fields
 
         private readonly string _configFile;
-
 
         #endregion Fields
 
@@ -23,7 +22,7 @@ namespace HBD.Services.Email.Providers
 
         #endregion Constructors
 
-        #region Properties
+        #region Methods
 
         protected override async System.Threading.Tasks.Task<IEnumerable<EmailTemplate>> LoadTemplatesAsync()
         {
@@ -37,16 +36,6 @@ namespace HBD.Services.Email.Providers
 
             return JsonConvert.DeserializeObject<EmailTemplate[]>(fileText);
         }
-
-        #endregion Properties
-
-        #region Methods
-
-
-
-
-
-
 
         #endregion Methods
     }
