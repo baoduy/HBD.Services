@@ -67,6 +67,38 @@ namespace HBD.Services.Email.Tests
         }
 
         [TestMethod]
+        public async Task Test_EmptyAddress_ShouldBe_Ignore()
+        {
+            var emailTemplateProviderMoq = new Mock<IEmailTemplateProvider>();
+            emailTemplateProviderMoq.Setup(e => e.GetTemplate(It.IsAny<string>()))
+                .ReturnsAsync(new EmailTemplate("Duy")
+                {
+                    ToEmails = "[DuyEmail],{HBDEmail};hoang@hbd.com",
+                    Body = "Hello [Name]",
+                    Subject = "Hi, [Name]"
+                }).Verifiable();
+
+            using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()))
+            {
+                var mail = await mailProvider.GetMailMessageAsync("Duy",
+                    new object[]
+                    {
+                        new
+                        {
+                            DuyEmail = "",
+                            HBDEmail = "duy@hbd.net",
+                            Name = "Duy Hoang"
+                        }
+                    });
+
+                mail.Should().NotBeNull();
+                mail.To.Count.Should().Be(2);
+            }
+
+            emailTemplateProviderMoq.VerifyAll();
+        }
+
+        [TestMethod]
         public async Task Test_SendEmail_ByTemplate()
         {
             _smtpServer.ClearReceivedEmail();

@@ -37,6 +37,8 @@ namespace HBD.Services.Email
 
             foreach (var s in emailTemplates.SplitBySeparator())
             {
+                if (string.IsNullOrWhiteSpace(s)) continue;
+
                 if (s.IsEmail())
                 {
                     @this.Add(s);
@@ -44,6 +46,8 @@ namespace HBD.Services.Email
                 }
 
                 var e = await transformer.TransformAsync(s, transformData).ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(e)) continue;
+
                 @this.Add(e);
             }
         }
