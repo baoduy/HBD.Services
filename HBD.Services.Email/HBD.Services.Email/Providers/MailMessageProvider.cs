@@ -14,7 +14,7 @@ namespace HBD.Services.Email.Providers
         #region Fields
 
         private readonly IList<IEmailTemplateProvider> _emailTemplateProvider;
-        private readonly ITransformer _transformer;
+        private readonly ITransformerService _transformer;
 
         #endregion Fields
 
@@ -25,7 +25,7 @@ namespace HBD.Services.Email.Providers
         /// </summary>
         /// <param name="emailTemplateProvider"></param>
         /// <param name="transformer"></param>
-        public MailMessageProvider(IEnumerable<IEmailTemplateProvider> emailTemplateProvider, ITransformer transformer)
+        public MailMessageProvider(IEnumerable<IEmailTemplateProvider> emailTemplateProvider, ITransformerService transformer)
         {
             _emailTemplateProvider = emailTemplateProvider.ToList();
             this._transformer = transformer ?? throw new ArgumentNullException(nameof(transformer));
@@ -36,7 +36,7 @@ namespace HBD.Services.Email.Providers
         /// </summary>
         /// <param name="emailTemplateProvider"></param>
         /// <param name="transformer"></param>
-        protected internal MailMessageProvider(IEmailTemplateProvider emailTemplateProvider, ITransformer transformer)
+        protected internal MailMessageProvider(IEmailTemplateProvider emailTemplateProvider, ITransformerService transformer)
             : this(new[] { emailTemplateProvider }, transformer)
         {
         }

@@ -42,7 +42,7 @@ namespace HBD.Services.Email.Tests
                     Subject = "Hi, [Name]"
                 }).Verifiable();
 
-            using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()))
+            using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new TransformerService()))
             {
                 var mail = await mailProvider.GetMailMessageAsync("Duy",
                     new object[]
@@ -78,7 +78,7 @@ namespace HBD.Services.Email.Tests
                     Subject = "Hi, [Name]"
                 }).Verifiable();
 
-            using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()))
+            using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new TransformerService()))
             {
                 var mail = await mailProvider.GetMailMessageAsync("Duy",
                     new object[]
@@ -111,7 +111,7 @@ namespace HBD.Services.Email.Tests
             });
 
             using (var mailService = new SmtpEmailService(
-                new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()), new SmtpEmailOptions
+                new MailMessageProvider(emailTemplateProviderMoq.Object, new TransformerService()), new SmtpEmailOptions
                 {
                     FromEmailAddress = new MailAddress("drunkcoding@outlook.net"),
                     SmtpClientFactory = () => new SmtpClient("localhost", 25)
@@ -144,7 +144,7 @@ namespace HBD.Services.Email.Tests
             });
 
             using (var mailService = new SmtpEmailService(
-                new MailMessageProvider(emailTemplateProviderMoq.Object, new Transformer()), new SmtpEmailOptions
+                new MailMessageProvider(emailTemplateProviderMoq.Object, new TransformerService()), new SmtpEmailOptions
                 {
                     FromEmailAddress = new MailAddress("drunkcoding@outlook.net"),
                     SmtpClientFactory = () => new SmtpClient("localhost", 25)

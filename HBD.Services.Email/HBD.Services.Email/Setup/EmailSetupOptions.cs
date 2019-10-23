@@ -1,4 +1,5 @@
 ﻿using HBD.Services.Email.Builders;
+using HBD.Services.Transformation;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics.Contracts;
@@ -20,6 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal Action<IEmailTemplateBuilder> TemplateBuilder { get; private set; }
 
+        internal Action<TransformOptions> TransformOptions { get; private set; }
         #endregion Properties
 
         #region Methods
@@ -67,6 +69,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
+        public EmailSetupOptions WithTransformer(Action<TransformOptions> transformOptions)
+        {
+            this.TransformOptions = transformOptions;
+            return this;
+        }
         #endregion Methods
     }
 }

@@ -22,7 +22,7 @@ namespace HBD.Services.Transformation
         /// <summary>
         /// The <see cref="ITokenExtractor"/> for templates.
         /// </summary>
-        public IList<ITokenExtractor> TokenExtractors { get; } = new List<ITokenExtractor>();
+        public IList<ITokenExtractor> TokenExtractors { get; set; } = new List<ITokenExtractor>();
 
         /// <summary>
         /// The <see cref="ITokenResolver"/> for all <see cref="IToken"/>

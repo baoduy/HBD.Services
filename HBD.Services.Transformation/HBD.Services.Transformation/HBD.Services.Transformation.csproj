@@ -21,7 +21,7 @@ Version 1.0.0.1
 
 Version 1.0.0
 - The first version of Transformation</PackageReleaseNotes>
-    <Version>1.0.1</Version>
+    <Version>1.2.0</Version>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

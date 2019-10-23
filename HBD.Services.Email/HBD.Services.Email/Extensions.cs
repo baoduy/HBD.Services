@@ -31,7 +31,7 @@ namespace HBD.Services.Email
             return @this;
         }
 
-        internal static async Task FromAsync(this MailAddressCollection @this, string emailTemplates, ITransformer transformer, params object[] transformData)
+        internal static async Task FromAsync(this MailAddressCollection @this, string emailTemplates, ITransformerService transformer, params object[] transformData)
         {
             if (emailTemplates == null) return;
 

@@ -4,6 +4,7 @@ using HBD.Services.Email.Templates;
 using HBD.Services.Transformation;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Net;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -47,12 +48,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services.AddSingleton(op)
                 .AddTemplateProvider(op)
-                .AddEmailServiceOnly();
+                .AddEmailServiceOnly(op.TransformOptions);
         }
 
-        private static IServiceCollection AddEmailServiceOnly(this IServiceCollection services)
+        private static IServiceCollection AddEmailServiceOnly(this IServiceCollection services, Action<TransformOptions> transformOptions)
             => services.AddSingleton<IMailMessageProvider, MailMessageProvider>()
-                        .AddSingleton<ITransformer, Transformer>()
+                        .AddTransformerService(transformOptions)
                         .AddSingleton<IEmailService>(p =>
                         {
                             var mail = p.GetRequiredService<IMailMessageProvider>();
