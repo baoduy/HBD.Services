@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
             if (op.SmtpClientFactory != null)
                 services.AddSingleton(new SmtpEmailOptions
                 {
-                    FromEmailAddress = string.IsNullOrWhiteSpace(op.FromEmail) ? null : new System.Net.Mail.MailAddress(op.FromEmail),
+                    FromEmailAddress = new System.Net.Mail.MailAddress(op.FromEmail),
                     SmtpClientFactory = op.SmtpClientFactory
                 });
 
@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                         return new SmtpEmailOptions
                         {
-                            FromEmailAddress = string.IsNullOrWhiteSpace(config.FromEmail) ? null : new System.Net.Mail.MailAddress(config.FromEmail),
+                            FromEmailAddress = new System.Net.Mail.MailAddress(config.FromEmail),
                             SmtpClientFactory = () => new System.Net.Mail.SmtpClient(config.Host, config.Port)
                             {
                                 Credentials = string.IsNullOrWhiteSpace(config.UserName) ? null : new NetworkCredential(config.UserName, config.Password),
