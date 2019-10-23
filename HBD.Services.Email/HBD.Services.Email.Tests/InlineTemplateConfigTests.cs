@@ -96,7 +96,7 @@ namespace HBD.Services.Email.Tests
                 .Build();
 
             b.Should().HaveCount(2);
-            b.OfType<EmailTemplate>().All(b => b.IsValid).Should().BeTrue();
+            b.OfType<EmailTemplate>().All(i => i.IsValid).Should().BeTrue();
         }
 
         [TestMethod]
