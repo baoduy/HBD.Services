@@ -6,8 +6,8 @@
     <Authors>Duy Hoang</Authors>
     <Company>HBD</Company>
     <Description>The helper class to trasnform a string based on the template and data objects, dictionany or lazy data provider.</Description>
-    <Copyright>@2018</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <Copyright>@2020 Duy Hoang</Copyright>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/baoduy/HBD.Services</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/baoduy/Images/master/NugetLogo.PNG</PackageIconUrl>
     <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
@@ -23,6 +23,7 @@ Version 1.0.0
 - The first version of Transformation</PackageReleaseNotes>
     <Version>1.0.1</Version>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

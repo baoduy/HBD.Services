@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Duy Hoang</Authors>
     <Company>HBD</Company>
-    <Copyright>@2020</Copyright>
+    <Copyright>@2020 Duy Hoang</Copyright>
     <PackageProjectUrl>https://github.com/baoduy/HBD.Services</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/baoduy/Images/master/NugetLogo.PNG</PackageIconUrl>
     <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
@@ -27,6 +27,7 @@ Version 1.0.0
     <Owners>Duy Hoang</Owners>
     <Summary>The servie that allow to send email notification from config file or predefined templates.</Summary>
     <Title>HBD.Services.Email</Title>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
