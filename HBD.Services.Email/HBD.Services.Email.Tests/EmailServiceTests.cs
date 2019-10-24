@@ -99,6 +99,49 @@ namespace HBD.Services.Email.Tests
         }
 
         [TestMethod]
+        public async Task Test_TransformTheSameTemplate_ButDifferentData_EmailDifference()
+        {
+            var emailTemplateProviderMoq = new Mock<IEmailTemplateProvider>();
+            emailTemplateProviderMoq.Setup(e => e.GetTemplate(It.IsAny<string>()))
+                .ReturnsAsync(new EmailTemplate("Duy")
+                {
+                    ToEmails = "[DuyEmail],{HBDEmail};hoang@hbd.com",
+                    Body = "Hello [Name]",
+                    Subject = "Hi, [Name]"
+                }).Verifiable();
+
+            using (var mailProvider = new MailMessageProvider(emailTemplateProviderMoq.Object, new TransformerService()))
+            {
+                var mail1 = await mailProvider.GetMailMessageAsync("Duy",
+                    new object[]
+                    {
+                        new
+                        {
+                            DuyEmail = "a@outlook.net",
+                            HBDEmail = "h@hbd.net",
+                            Name = "Duy"
+                        }
+                    });
+
+                var mail2 = await mailProvider.GetMailMessageAsync("Duy",
+                  new object[]
+                  {
+                        new
+                        {
+                            DuyEmail = "b@outlook.net",
+                            HBDEmail = "b@hbd.net",
+                            Name = "Hoang"
+                        }
+                  });
+
+                mail1.To.First().Address.Should().NotBe(mail2.To.First().Address);
+                mail1.Subject.Should().NotBe(mail2.Subject);
+                mail1.Body.Should().NotBe(mail2.Body);
+            }
+
+            emailTemplateProviderMoq.VerifyAll();
+        }
+        [TestMethod]
         public async Task Test_SendEmail_ByTemplate()
         {
             _smtpServer.ClearReceivedEmail();

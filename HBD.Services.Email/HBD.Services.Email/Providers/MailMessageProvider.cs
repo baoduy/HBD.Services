@@ -61,19 +61,18 @@ namespace HBD.Services.Email.Providers
         protected async Task<MailMessage> GetMailMessageAsync(IEmailTemplate template, object[] transformData, params string[] attachments)
         {
             var mail = new MailMessage();
+            using (var t = _transformer.BeginSection())
+            {
+                await Task.WhenAll(
+                    mail.To.FromAsync(template.ToEmails, _transformer, transformData),
+                    mail.CC.FromAsync(template.CcEmails, _transformer, transformData),
+                    mail.Bcc.FromAsync(template.BccEmails, _transformer, transformData)
+                ).ConfigureAwait(false);
 
-            //Remove the AngledBracketTokenExtractor from Transformer as it might impacts to the html format.
-
-            await Task.WhenAll(
-                mail.To.FromAsync(template.ToEmails, _transformer, transformData),
-                mail.CC.FromAsync(template.CcEmails, _transformer, transformData),
-                mail.Bcc.FromAsync(template.BccEmails, _transformer, transformData)
-            ).ConfigureAwait(false);
-
-            mail.Subject = await _transformer.TransformAsync(template.Subject, transformData).ConfigureAwait(false);
-            mail.Body = await _transformer.TransformAsync(template.Body, transformData).ConfigureAwait(false);
-            mail.IsBodyHtml = template.IsBodyHtml;
-
+                mail.Subject = await _transformer.TransformAsync(template.Subject, transformData).ConfigureAwait(false);
+                mail.Body = await _transformer.TransformAsync(template.Body, transformData).ConfigureAwait(false);
+                mail.IsBodyHtml = template.IsBodyHtml;
+            }
             return mail;
         }
 

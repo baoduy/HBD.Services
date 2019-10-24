@@ -16,6 +16,11 @@ namespace HBD.Services.Transformation
         #endregion Properties
 
         #region Methods
+        /// <summary>
+        /// Begin the Transformation Section. Dispose the section to clear the cache for each transforming
+        /// </summary>
+        /// <returns></returns>
+         IDisposable BeginSection();
 
         /// <summary>
         /// Transform template from TransformData and additionalData

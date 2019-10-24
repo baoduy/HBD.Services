@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
         #region Methods
 
         public static IServiceCollection AddTransformerService(this IServiceCollection services, Action<TransformOptions> optionFactory)
-           => services.AddSingleton<ITransformerService>(p => new TransformerService(optionFactory));
+           => services.AddTransient<ITransformerService>(p => new TransformerService(optionFactory));
 
         #endregion Methods
     }

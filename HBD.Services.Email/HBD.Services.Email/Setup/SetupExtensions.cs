@@ -52,9 +52,9 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         private static IServiceCollection AddEmailServiceOnly(this IServiceCollection services, Action<TransformOptions> transformOptions)
-            => services.AddSingleton<IMailMessageProvider, MailMessageProvider>()
+            => services.AddScoped<IMailMessageProvider, MailMessageProvider>()
                         .AddTransformerService(transformOptions)
-                        .AddSingleton<IEmailService>(p =>
+                        .AddScoped<IEmailService>(p =>
                         {
                             var mail = p.GetRequiredService<IMailMessageProvider>();
                             var options = p.GetService<SmtpEmailOptions>();

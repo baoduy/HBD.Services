@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/baoduy/HBD.Services</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
     <Description>The servie that allow to send email notification from config file or predefined templates.</Description>
-    <Version>1.2.0-preview004</Version>
+    <Version>1.2.0</Version>
     <PackageTags>Email,Notification Templates</PackageTags>
     <PackageReleaseNotes>Version 1.2.0
 - Support multi template provider.
@@ -45,7 +45,7 @@ Version 1.0.0
 
 
   <ItemGroup>
-    <PackageReference Include="HBD.Services.Transformation" Version="1.2.0">
+    <PackageReference Include="HBD.Services.Transformation" Version="1.2.1-Preview002">
     </PackageReference>
   </ItemGroup>
 

@@ -57,7 +57,7 @@ namespace HBD.Services.Transformation
 
         /// <summary>
         /// Disable the local cache. If there are 2 or move IToken with the same key the value will resolve 1 time only.
-        /// Disable cache the TokenResolver will be call for every IToken regarless to the Key.
+        /// Disable cache the TokenResolver will be call for every IToken regardless to the Key.
         /// </summary>
         public bool DisabledLocalCache
         {
@@ -69,7 +69,7 @@ namespace HBD.Services.Transformation
         }
 
         /// <summary>
-        /// The convertor will be used to convert obj to string.
+        /// The converter will be used to convert obj to string.
         /// Apply the data format in this object.
         /// </summary>
         public IValueFormatter Formatter
@@ -117,6 +117,7 @@ namespace HBD.Services.Transformation
         #endregion Properties
 
         #region Methods
+        public IDisposable BeginSection() => new TransformSection(this);
 
         public void Dispose() => Dispose(true);
 
@@ -237,6 +238,7 @@ namespace HBD.Services.Transformation
             }
         }
 
+        internal void ClearCache() => _cacheService.Clear();
         #endregion Methods
     }
 }
