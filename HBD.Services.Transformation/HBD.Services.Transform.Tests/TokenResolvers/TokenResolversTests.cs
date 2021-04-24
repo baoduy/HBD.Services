@@ -19,11 +19,11 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
         {
             var resolver = new TokenResolver();
 
-            var val = resolver.Resolve(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), data: new Object[]
+            var val = resolver.Resolve(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new object[]
             {
                 null,
-                new { A=(string)null},
-                new { A=123},
+                new {A = (string) null},
+                new {A = 123}
             });
 
             val.Should().Be(123);
@@ -34,11 +34,11 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
         {
             var resolver = new TokenResolver();
 
-            var val = await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), data: new Object[]
+            var val = await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new object[]
             {
                 null,
-                new { A=(string)null},
-                new { A=123},
+                new {A = (string) null},
+                new {A = 123}
             });
 
             val.Should().Be(123);
@@ -69,7 +69,7 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
 
             var val = await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new Dictionary<string, object>
             {
-                {"A","Duy"}
+                {"A", "Duy"}
             });
 
             val.Should().Be("Duy");
@@ -83,7 +83,7 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
 
             var val = await resolver.ResolveAsync(new TokenResult(new CurlyBracketDefinition(), "{A}", "{A} 123", 0), new Dictionary<object, object>
             {
-                {"A","Duy"}
+                {"A", "Duy"}
             });
 
             val.Should().Be("Duy");
@@ -95,11 +95,11 @@ namespace HBD.Services.Transform.Tests.TokenResolvers
         {
             var resolver = new TokenResolver();
 
-            var val = resolver.Resolve(null, data: new Object[]
+            var val = resolver.Resolve(null, new object[]
             {
                 null,
-                new { A=(string)null},
-                new { A=123},
+                new {A = (string) null},
+                new {A = 123}
             });
         }
 

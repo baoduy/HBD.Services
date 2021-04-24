@@ -16,26 +16,26 @@ namespace HBD.Services.Transformation
     {
         #region Fields
 
+        public static readonly ITokenResolver DefaultTokenResolver = new TokenResolver();
         public static readonly IValueFormatter DefaultConvertor = new ValueFormatter();
 
         public static readonly IReadOnlyCollection<ITokenExtractor> DefaultTokenExtractors = new ITokenExtractor[]
-                {
+        {
             new AngledBracketTokenExtractor(),
             new SquareBracketExtractor(),
-            new CurlyBracketExtractor(),
+            new CurlyBracketExtractor()
         };
 
-        public static readonly ITokenResolver DefaultTokenResolver = new TokenResolver();
         private readonly ConcurrentDictionary<string, object> _cacheService;
-        private readonly object _locker = new object();
         private readonly Action<TransformOptions> _optionFactory;
-        private bool _disabledLocalCache = false;
+
+        private bool _disabledLocalCache;
         private IValueFormatter _formatter;
         private bool _initialized;
 
         private ITokenResolver _tokenResolver;
         private IReadOnlyCollection<ITokenExtractor> _tokens;
-        private object[] _transformData;
+        private object[] _globalParameters;
 
         #endregion Fields
 
@@ -47,97 +47,93 @@ namespace HBD.Services.Transformation
 
         public TransformerService(Action<TransformOptions> optionFactory)
         {
-            this._optionFactory = optionFactory;
+            _optionFactory = optionFactory;
             _cacheService = new ConcurrentDictionary<string, object>();
         }
 
         #endregion Constructors
 
-        #region Properties
-
-        /// <summary>
-        /// Disable the local cache. If there are 2 or move IToken with the same key the value will resolve 1 time only.
-        /// Disable cache the TokenResolver will be call for every IToken regardless to the Key.
-        /// </summary>
-        public bool DisabledLocalCache
-        {
-            get
-            {
-                EnsureInitialized();
-                return _disabledLocalCache;
-            }
-        }
-
-        /// <summary>
-        /// The converter will be used to convert obj to string.
-        /// Apply the data format in this object.
-        /// </summary>
-        public IValueFormatter Formatter
-        {
-            get
-            {
-                EnsureInitialized();
-                return _formatter;
-            }
-        }
-
-        /// <summary>
-        /// The Token Resolver that will use to discover the value by IToken in provided Data.
-        /// </summary>
-        public ITokenResolver TokenResolver
-        {
-            get
-            {
-                EnsureInitialized();
-                return _tokenResolver;
-            }
-        }
-
-        /// <summary>
-        /// The Token Extractors that will be used to extract the IToken from Template
-        /// </summary>
-        public IReadOnlyCollection<ITokenExtractor> Tokens
-        {
-            get
-            {
-                EnsureInitialized();
-                return _tokens;
-            }
-        }
-
-        public object[] TransformData
-        {
-            get
-            {
-                EnsureInitialized();
-                return _transformData;
-            }
-        }
-
-        #endregion Properties
+        // #region Properties
+        //
+        // /// <summary>
+        // /// Disable the local cache. If there are 2 or move IToken with the same key the value will resolve 1 time only.
+        // /// Disable cache the TokenResolver will be call for every IToken regardless to the Key.
+        // /// </summary>
+        // public bool DisabledLocalCache
+        // {
+        //     get
+        //     {
+        //         EnsureInitialized();
+        //         return _disabledLocalCache;
+        //     }
+        // }
+        //
+        // /// <summary>
+        // /// The converter will be used to convert obj to string.
+        // /// Apply the data format in this object.
+        // /// </summary>
+        // public IValueFormatter Formatter
+        // {
+        //     get
+        //     {
+        //         EnsureInitialized();
+        //         return _formatter;
+        //     }
+        // }
+        //
+        // /// <summary>
+        // /// The Token Resolver that will use to discover the value by IToken in provided Data.
+        // /// </summary>
+        // public ITokenResolver TokenResolver
+        // {
+        //     get
+        //     {
+        //         EnsureInitialized();
+        //         return _tokenResolver;
+        //     }
+        // }
+        //
+        // /// <summary>
+        // /// The Token Extractors that will be used to extract the IToken from Template
+        // /// </summary>
+        // public IReadOnlyCollection<ITokenExtractor> Tokens
+        // {
+        //     get
+        //     {
+        //         EnsureInitialized();
+        //         return _tokens;
+        //     }
+        // }
+        //
+        // public object[] GlobalParameters
+        // {
+        //     get
+        //     {
+        //         EnsureInitialized();
+        //         return _transformParameters;
+        //     }
+        // }
+        //
+        // #endregion Properties
 
         #region Methods
-        public IDisposable BeginSection() => new TransformSection(this);
-
-        public void Dispose() => Dispose(true);
 
         public async Task<string> TransformAsync(string template, params object[] additionalData)
         {
             EnsureInitialized();
 
-            var tokens = await Task.WhenAll(Tokens.Select(t => t.ExtractAsync(template))).ConfigureAwait(false);
-            return await this.InternalTransformAsync(template, tokens.SelectMany(i => i), additionalData, null).ConfigureAwait(false);
+            var tokens = await Task.WhenAll(_tokens.Select(t => t.ExtractAsync(template))).ConfigureAwait(false);
+            return await InternalTransformAsync(template, tokens.SelectMany(i => i), additionalData, null).ConfigureAwait(false);
         }
 
         public async Task<string> TransformAsync(string template, Func<IToken, Task<object>> dataProvider)
         {
             EnsureInitialized();
 
-            var tokens = await Task.WhenAll(Tokens.Select(t => t.ExtractAsync(template))).ConfigureAwait(false);
-            return await this.InternalTransformAsync(template, tokens.SelectMany(i => i), null, dataProvider).ConfigureAwait(false);
+            var tokens = await Task.WhenAll(_tokens.Select(t => t.ExtractAsync(template))).ConfigureAwait(false);
+            return await InternalTransformAsync(template, tokens.SelectMany(i => i), null, dataProvider).ConfigureAwait(false);
         }
 
-        protected virtual void Dispose(bool disposing) => _cacheService.Clear();
 
         protected virtual async Task<string> InternalTransformAsync(string template, IEnumerable<IToken> tokens, object[] additionalData, Func<IToken, Task<object>> dataProvider)
         {
@@ -151,7 +147,7 @@ namespace HBD.Services.Transformation
                 if (val == null)
                     throw new UnResolvedTokenException(token.Token);
 
-                var strVal = Formatter.Convert(token, val);
+                var strVal = _formatter.Convert(token, val);
 
                 builder = builder.Replace(token.Token, strVal, token.Index + adjustment, token.Token.Length);
                 adjustment += strVal.Length - token.Token.Length;
@@ -166,12 +162,10 @@ namespace HBD.Services.Transformation
         /// <param name="token"></param>
         /// <param name="additionalData"></param>
         /// <returns></returns>
-        protected virtual object TryGetAndCacheValue(IToken token, object[] additionalData)
-        {
-            return DisabledLocalCache
+        protected virtual object TryGetAndCacheValue(IToken token, object[] additionalData) =>
+            _disabledLocalCache
                 ? TryGetValue(token, additionalData)
                 : _cacheService.GetOrAdd(token.Token.ToUpper(), t => TryGetValue(token, additionalData));
-        }
 
         /// <summary>
         /// Try Get data for <see cref="IToken"/> from dataProvider and Cache for later use.
@@ -183,7 +177,7 @@ namespace HBD.Services.Transformation
         {
             if (dataProvider == null) return null;
             var val = await dataProvider(token).ConfigureAwait(false);
-            return DisabledLocalCache ? val : _cacheService.GetOrAdd(token.Token.ToUpper(), t => val);
+            return _disabledLocalCache ? val : _cacheService.GetOrAdd(token.Token.ToUpper(), t => val);
         }
 
         /// <summary>
@@ -197,10 +191,10 @@ namespace HBD.Services.Transformation
             object val = null;
 
             if (additionalData?.Any() == true)
-                val = TokenResolver.Resolve(token, additionalData);
+                val = _tokenResolver.Resolve(token, additionalData);
 
-            if (val == null && TransformData?.Any() == true)
-                val = TokenResolver.Resolve(token, TransformData);
+            if (val == null && _globalParameters?.Any() == true)
+                val = _tokenResolver.Resolve(token, _globalParameters);
 
             return val;
         }
@@ -209,36 +203,31 @@ namespace HBD.Services.Transformation
         {
             if (_initialized) return;
 
-            lock (_locker)
+            if (_optionFactory != null)
             {
-                if (_optionFactory != null)
-                {
-                    var op = new TransformOptions();
-                    _optionFactory.Invoke(op);
+                var op = new TransformOptions();
+                _optionFactory.Invoke(op);
 
-                    if (op.TokenExtractors.Any())
-                        _tokens = new ReadOnlyCollection<ITokenExtractor>(op.TokenExtractors);
+                if (op.TokenExtractors.Any())
+                    _tokens = new ReadOnlyCollection<ITokenExtractor>(op.TokenExtractors);
 
-                    _tokenResolver = op.TokenResolver;
-                    _formatter = op.Formatter;
-                    _disabledLocalCache = op.DisabledLocalCache;
-                    _transformData = op.TransformData;
-                }
-
-                if (_tokens == null || _tokens.Count <= 0)
-                    _tokens = DefaultTokenExtractors;
-
-                if (_tokenResolver == null)
-                    _tokenResolver = DefaultTokenResolver;
-
-                if (_formatter == null)
-                    _formatter = DefaultConvertor;
-
-                _initialized = true;
+                _tokenResolver = op.TokenResolver;
+                _formatter = op.Formatter;
+                _disabledLocalCache = op.DisabledLocalCache;
+                _globalParameters = op.GlobalParameters;
             }
+
+            if (_tokens?.Any() != true)
+                _tokens = DefaultTokenExtractors;
+
+            _tokenResolver ??= DefaultTokenResolver;
+            _formatter ??= DefaultConvertor;
+
+            _initialized = true;
         }
 
         internal void ClearCache() => _cacheService.Clear();
+
         #endregion Methods
     }
 }

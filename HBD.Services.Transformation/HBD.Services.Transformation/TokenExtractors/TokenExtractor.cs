@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace HBD.Services.Transformation.TokenExtractors
 {
     /// <summary>
-    /// The extractor of <token>
+    /// The extractor of &lt;token&gt;
     /// </summary>
     public class AngledBracketTokenExtractor : TokenExtractor
     {
@@ -67,10 +67,14 @@ namespace HBD.Services.Transformation.TokenExtractors
         #region Methods
 
         public IEnumerable<IToken> Extract(string template)
-            => this.ExtractCore(template);
+        {
+            return ExtractCore(template);
+        }
 
         public Task<IEnumerable<IToken>> ExtractAsync(string template)
-            => Task.Run(() => this.ExtractCore(template));
+        {
+            return Task.Run(() => ExtractCore(template));
+        }
 
         protected virtual IEnumerable<IToken> ExtractCore(string template)
         {

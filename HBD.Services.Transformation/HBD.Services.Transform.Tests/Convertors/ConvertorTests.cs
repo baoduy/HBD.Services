@@ -21,9 +21,9 @@ namespace HBD.Services.Transform.Tests.Convertors
             c.Convert(null, DateTime.Now).Should().Contain(DateTime.Now.ToString("dd/MM/yyyy"));
             c.Convert(null, DateTimeOffset.Now).Should().Contain(DateTime.Now.ToString("dd/MM/yyyy"));
             c.Convert(null, true).Should().Be("Yes");
-            c.Convert(null, 123456l).Should().Be("123,456");
+            c.Convert(null, 123456L).Should().Be("123,456");
             c.Convert(null, 123456.78d).Should().Be("123,456.78");
-            c.Convert(null, (float)123456.70).Should().Be("123,456.70");
+            c.Convert(null, (float) 123456.70).Should().Be("123,456.70");
         }
 
         #endregion Methods

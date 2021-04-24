@@ -28,10 +28,12 @@ namespace HBD.Services.Transform.Tests.TokenExtractors
             t.Extract("").ToList()
                 .Should().HaveCount(0);
 
-            t.Extract((string)null).ToList()
+            t.Extract((string) null).ToList()
                 .Should().HaveCount(0);
 
-            var list = t.Extract("Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy>").ToList();
+            var list = t.Extract(
+                    "Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy> Bao, Hoang <Duy>")
+                .ToList();
 
             list.Should().HaveCount(12)
                 .And.Subject.First().Key.Should().Be("Duy");
@@ -61,10 +63,12 @@ namespace HBD.Services.Transform.Tests.TokenExtractors
             t.Extract("").ToList()
                 .Should().HaveCount(0);
 
-            t.Extract((string)null).ToList()
+            t.Extract((string) null).ToList()
                 .Should().HaveCount(0);
 
-            var list = t.Extract("Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy}").ToList();
+            var list = t.Extract(
+                    "Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy} Bao, Hoang {Duy}")
+                .ToList();
 
             list.Should().HaveCount(12)
                 .And.Subject.First().Key.Should().Be("Duy");

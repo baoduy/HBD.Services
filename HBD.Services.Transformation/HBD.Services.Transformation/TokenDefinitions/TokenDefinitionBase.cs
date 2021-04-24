@@ -13,7 +13,9 @@
         #region Methods
 
         public bool IsToken(string value)
-            => !string.IsNullOrWhiteSpace(value) && value[0] == Begin && value[value.Length - 1] == End;
+        {
+            return !string.IsNullOrWhiteSpace(value) && value[0] == Begin && value[value.Length - 1] == End;
+        }
 
         #endregion Methods
     }

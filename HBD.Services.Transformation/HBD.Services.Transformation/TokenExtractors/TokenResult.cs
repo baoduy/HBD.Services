@@ -53,7 +53,7 @@ namespace HBD.Services.Transformation.TokenExtractors
             get
             {
                 if (!string.IsNullOrWhiteSpace(_key)) return _key;
-                _key = this.Token.Replace(Definition.Begin.ToString(), string.Empty).Replace(Definition.End.ToString(), string.Empty);
+                _key = Token.Replace(Definition.Begin.ToString(), string.Empty).Replace(Definition.End.ToString(), string.Empty);
                 return _key;
             }
         }

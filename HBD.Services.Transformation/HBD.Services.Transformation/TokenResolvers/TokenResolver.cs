@@ -39,12 +39,15 @@ namespace HBD.Services.Transformation.TokenResolvers
                 {
                     if (!(obj is IDictionary<string, object>))
                         throw new ArgumentException("Only IDictionary<string,object> is supported");
-                    var d = (IDictionary<string, object>)obj;
+                    var d = (IDictionary<string, object>) obj;
 
                     var key = d.Keys.FirstOrDefault(k => k.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
                     value = key != null ? d[key] : null;
                 }
-                else value = GetProperty(obj, propertyName)?.GetValue(obj);
+                else
+                {
+                    value = GetProperty(obj, propertyName)?.GetValue(obj);
+                }
 
                 if (value != null) return value;
             }
@@ -53,15 +56,19 @@ namespace HBD.Services.Transformation.TokenResolvers
         }
 
         public Task<object> ResolveAsync(IToken token, params object[] data)
-            => Task.Run(() => this.Resolve(token, data));
+        {
+            return Task.Run(() => Resolve(token, data));
+        }
 
         protected virtual PropertyInfo GetProperty(object data, string propertyName)
-                            => data.GetType().GetProperty(propertyName,
-                BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public)
+        {
+            return data.GetType().GetProperty(propertyName,
+                       BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public)
 
-            //BindingFlags.NonPublic and BindingFlags.Public are not work together
-            ?? data.GetType().GetProperty(propertyName,
-                   BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.NonPublic);
+                   //BindingFlags.NonPublic and BindingFlags.Public are not work together
+                   ?? data.GetType().GetProperty(propertyName,
+                       BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.NonPublic);
+        }
 
         #endregion Methods
     }

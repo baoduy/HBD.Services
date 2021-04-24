@@ -1,5 +1,7 @@
 ﻿using HBD.Services.Transformation;
 using System;
+// ReSharper disable CheckNamespace
+// ReSharper disable UnusedMember.Global
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -7,8 +9,8 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         #region Methods
 
-        public static IServiceCollection AddTransformerService(this IServiceCollection services, Action<TransformOptions> optionFactory)
-           => services.AddTransient<ITransformerService>(p => new TransformerService(optionFactory));
+        public static IServiceCollection AddTransformerService(this IServiceCollection services, Action<TransformOptions> optionFactory) 
+            => services.AddTransient<ITransformerService>(p => new TransformerService(optionFactory));
 
         #endregion Methods
     }
