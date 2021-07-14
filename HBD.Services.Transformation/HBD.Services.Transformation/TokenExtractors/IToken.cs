@@ -4,10 +4,8 @@ namespace HBD.Services.Transformation.TokenExtractors
 {
     public interface IToken
     {
-        #region Properties
-
         /// <summary>
-        /// The token defination
+        /// The token definition
         /// </summary>
         ITokenDefinition Definition { get; }
 
@@ -27,7 +25,5 @@ namespace HBD.Services.Transformation.TokenExtractors
         /// The token value. Ex: [key]
         /// </summary>
         string Token { get; }
-
-        #endregion Properties
     }
 }

@@ -3,14 +3,10 @@
     /// <summary>
     /// Defination of [token]
     /// </summary>
-    public sealed class SquareBracketDefinition : TokenDefinitionBase
+    public sealed class SquareBracketDefinition : TokenDefinition
     {
-        #region Properties
-
-        public override char Begin => '[';
-
-        public override char End => ']';
-
-        #endregion Properties
+        public SquareBracketDefinition() : base("[", "]")
+        {
+        }
     }
 }

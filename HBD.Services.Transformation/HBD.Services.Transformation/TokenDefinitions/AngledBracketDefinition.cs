@@ -3,14 +3,10 @@
     /// <summary>
     /// Defination of <token>
     /// </summary>
-    public sealed class AngledBracketDefinition : TokenDefinitionBase
+    public sealed class AngledBracketDefinition : TokenDefinition
     {
-        #region Properties
-
-        public override char Begin => '<';
-
-        public override char End => '>';
-
-        #endregion Properties
+        public AngledBracketDefinition() : base("<", ">")
+        {
+        }
     }
 }

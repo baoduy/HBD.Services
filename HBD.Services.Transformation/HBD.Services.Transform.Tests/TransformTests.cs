@@ -69,6 +69,14 @@ namespace HBD.Services.Transform.Tests
             s.Should().Be("Hoang Bao Duy");
         }
 
+        
+        [TestMethod]
+        public async Task TransformAsync_Custom_Test()
+        {
+            var t = new TransformerService();
+            var s = await t.TransformAsync("Hoang [[A]] Duy", new {A = "Bao"});
+            s.Should().Be("Hoang [Bao] Duy");
+        }
         #endregion Methods
     }
 }

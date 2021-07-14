@@ -11,14 +11,8 @@ namespace HBD.Services.Transformation.TokenExtractors
     [DebuggerDisplay("Token = {" + nameof(Token) + "}")]
     internal sealed class TokenResult : IToken
     {
-        #region Fields
-
         private string _key;
-
-        #endregion Fields
-
-        #region Constructors
-
+        
         /// <summary>
         /// The Token result
         /// </summary>
@@ -28,8 +22,8 @@ namespace HBD.Services.Transformation.TokenExtractors
         /// <param name="index"></param>
         public TokenResult(ITokenDefinition definition, string token, string originalString, int index)
         {
-            OriginalString = originalString ?? throw new ArgumentNullException(nameof(originalString));
             Index = index;
+            OriginalString = originalString ?? throw new ArgumentNullException(nameof(originalString));
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Token = token ?? throw new ArgumentNullException(nameof(token));
 
@@ -39,11 +33,7 @@ namespace HBD.Services.Transformation.TokenExtractors
             if (index < 0 || index > originalString.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
         }
-
-        #endregion Constructors
-
-        #region Properties
-
+        
         public ITokenDefinition Definition { get; }
 
         public int Index { get; }
@@ -53,7 +43,7 @@ namespace HBD.Services.Transformation.TokenExtractors
             get
             {
                 if (!string.IsNullOrWhiteSpace(_key)) return _key;
-                _key = Token.Replace(Definition.Begin.ToString(), string.Empty).Replace(Definition.End.ToString(), string.Empty);
+                _key = Token.Replace(Definition.Begin, string.Empty).Replace(Definition.End, string.Empty);
                 return _key;
             }
         }
@@ -61,7 +51,5 @@ namespace HBD.Services.Transformation.TokenExtractors
         public string OriginalString { get; }
 
         public string Token { get; }
-
-        #endregion Properties
     }
 }

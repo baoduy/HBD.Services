@@ -7,12 +7,12 @@
         /// <summary>
         /// Begin character of token. Ex '[';
         /// </summary>
-        char Begin { get; }
+        string Begin { get; }
 
         /// <summary>
         /// End character of token. Ex: ']';
         /// </summary>
-        char End { get; }
+        string End { get; }
 
         #endregion Properties
 
